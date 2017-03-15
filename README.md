@@ -15,4 +15,5 @@ End to end pipeline:
 *Learning to Rank Models - Run any of the .py files in the home directory. Each model script will read in the features from 'input_clean',
                            run a 10-fold cross validation routine to showcase the performance of each model, and save the test predictions
                            in the 'output' folder. Models include OLS, Lasso, Ridge, KNN, SVM, Random Forests, XGBoost and Neural                                    Networks.
-                      
+               
+ *Model Evaluation - Several metrics were implemented in order to evaluate the performance of our models using different criteria. The code for these can be found in the 'Metrics.py' file.
