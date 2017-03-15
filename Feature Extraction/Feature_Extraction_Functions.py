@@ -128,10 +128,12 @@ def create_product_dataframe(train, test, attributes, product_descriptions):
 def create_idf_defaultdict(search_terms, product_df, doc = 'product_title'):
     idf_dict = defaultdict(float)
     num_instances = len(search_terms)
+    #add all documents (each split into a list of words) to an array
+    documents = [doc.split() for doc in product_df[doc]]
     #for each search term, compute idf value
     for i,search_term in enumerate(search_terms):
         #count number of documents the term appears in
-        idf_dict[search_term] = sum([search_term in document.split() for document in product_df[doc]])
+        idf_dict[search_term] = sum([search_term in document for document in documents])
         #after every 10 processed search terms, save progress
         if (i+1) % 1000 == 0: print('Processed {} of {} instances...'.format(i+1,num_instances))
 
