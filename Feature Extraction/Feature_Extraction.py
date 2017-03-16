@@ -9,10 +9,10 @@ import pandas as pd
 import numpy as np
 import Feature_Extraction_Functions as f
  
-attributes = pd.read_csv('../input_clean/attributes_clean.csv',encoding="ISO-8859-1")
-product_descriptions = pd.read_csv('../input_clean/product_descriptions_clean.csv')
-train_original = pd.read_csv('../input_clean/train_clean.csv', encoding="ISO-8859-1",index_col='id')
-test_original = pd.read_csv('../input_clean/test_clean.csv', encoding="ISO-8859-1",index_col='id')
+attributes = pd.read_csv('input_clean/attributes_clean.csv',encoding="ISO-8859-1")
+product_descriptions = pd.read_csv('input_clean/product_descriptions_clean.csv')
+train_original = pd.read_csv('input_clean/train_clean.csv', encoding="ISO-8859-1",index_col='id')
+test_original = pd.read_csv('input_clean/test_clean.csv', encoding="ISO-8859-1",index_col='id')
 
 #for each product, I have put all its data in a dataframe...
 product_dataframe = f.load_product_dataframe(train_original,test_original,attributes,product_descriptions)
@@ -31,7 +31,7 @@ doc_len_dict = f.load_dict_of_avg_doc_lengths(product_dataframe)
 idf_dict_product_title = f.load_idf_default_dict(search_terms,product_dataframe,'product_title')
 idf_dict_prod_descr = f.load_idf_default_dict(search_terms,product_dataframe,'prod_descr')
 idf_dict_attr_names = f.load_idf_default_dict(search_terms,product_dataframe,'attr_names')
-idf_dict_attr_vals = f.load_idf_default_dict(search_terms,product_dataframe,'attr_values')
+idf_dict_attr_values = f.load_idf_default_dict(search_terms,product_dataframe,'attr_values')
 
 #have a look at data for the first product uid
 #attributes.loc[attributes['product_uid']==100001]
@@ -86,16 +86,16 @@ features = [
             ('_tf_','attr_names','natural_avg'),
             ('_tf_','attr_names','log_norm_avg'),
             ('_tf_','attr_names','double_norm_0.5_avg'),
-            ('_tf_','attr_vals','natural'),
-            ('_tf_','attr_vals','natural_avg'),
-            ('_tf_','attr_vals','log_norm_avg'),
-            ('_tf_','attr_vals','double_norm_0.5_avg'),
+            ('_tf_','attr_values','natural'),
+            ('_tf_','attr_values','natural_avg'),
+            ('_tf_','attr_values','log_norm_avg'),
+            ('_tf_','attr_values','double_norm_0.5_avg'),
 
             #length features should contain: doc
             ('_length','product_title'),
             ('_length','prod_descr'),
             ('_length','attr_names'),
-            ('_length','attr_vals'),
+            ('_length','attr_values'),
             ('_length','search_term'),
 
             #idf features should contain: doc and idf_type
@@ -112,10 +112,10 @@ features = [
             ('_idf_','attr_names', 'smooth_avg'),
             ('_idf_','attr_names', 'max_avg'),
             ('_idf_','attr_names', 'prob_avg'),
-            ('_idf_','attr_vals', 'smooth'),
-            ('_idf_','attr_vals', 'smooth_avg'),
-            ('_idf_','attr_vals', 'max_avg'),
-            ('_idf_','attr_vals', 'prob_avg'),
+            ('_idf_','attr_values', 'smooth'),
+            ('_idf_','attr_values', 'smooth_avg'),
+            ('_idf_','attr_values', 'max_avg'),
+            ('_idf_','attr_values', 'prob_avg'),
 
             #tf_idf features should contain: doc, tf_type, idf_type, tf_idf_type
             #tf_idf is the type of tf_idf to calculate (sum/average across query words)
@@ -128,9 +128,9 @@ features = [
             ('_tf_idf_','attr_names','natural','smooth','sum'),
             ('_tf_idf_','attr_names','natural','max','sum'),
             ('_tf_idf_','attr_names','natural','prob','sum'),
-            ('_tf_idf_','attr_vals','natural','smooth','sum'),
-            ('_tf_idf_','attr_vals','natural','max','sum'),
-            ('_tf_idf_','attr_vals','natural','prob','sum'),
+            ('_tf_idf_','attr_values','natural','smooth','sum'),
+            ('_tf_idf_','attr_values','natural','max','sum'),
+            ('_tf_idf_','attr_values','natural','prob','sum'),
 
             ('_tf_idf_','product_title','log_norm','smooth','sum'),
             ('_tf_idf_','product_title','log_norm','max','sum'),
@@ -141,31 +141,31 @@ features = [
             ('_tf_idf_','attr_names','log_norm','smooth','sum'),
             ('_tf_idf_','attr_names','log_norm','max','sum'),
             ('_tf_idf_','attr_names','log_norm','prob','sum'),
-            ('_tf_idf_','attr_vals','log_norm','smooth','sum'),
-            ('_tf_idf_','attr_vals','log_norm','max','sum'),
-            ('_tf_idf_','attr_vals','log_norm','prob','sum'),
+            ('_tf_idf_','attr_values','log_norm','smooth','sum'),
+            ('_tf_idf_','attr_values','log_norm','max','sum'),
+            ('_tf_idf_','attr_values','log_norm','prob','sum'),
 
             #bm 25 features should contain: doc, k1, b
             ('_bm25_','product_title', 'sum', 1.5, 0.75),
             ('_bm25_','prod_descr', 'sum', 1.5, 0.75),
             ('_bm25_','attr_names', 'sum', 1.5, 0.75),
-            ('_bm25_','attr_vals', 'sum', 1.5, 0.75),
+            ('_bm25_','attr_values', 'sum', 1.5, 0.75),
             ('_bm25_','product_title', 'avg', 1.5, 0.75),
             ('_bm25_','prod_descr', 'avg', 1.5, 0.75),
             ('_bm25_','attr_names', 'avg', 1.5, 0.75),
-            ('_bm25_','attr_vals', 'avg', 1.5, 0.75),
+            ('_bm25_','attr_values', 'avg', 1.5, 0.75),
             ]
 
 #add each feature to the data
 for feature in features:
-    f.add_feature(X_train, train, product_dataframe, feature, 0.5, idf_dict_product_title, idf_dict_prod_descr, idf_dict_attr_names, idf_dict_attr_vals,124428, doc_len_dict, data = 'train')
-    f.add_feature(X_test, test, product_dataframe, feature, 0.5, idf_dict_product_title, idf_dict_prod_descr, idf_dict_attr_names, idf_dict_attr_vals,124428, doc_len_dict, data = 'test')
+    f.add_feature(X_train, train, product_dataframe, feature, 0.5, idf_dict_product_title, idf_dict_prod_descr, idf_dict_attr_names, idf_dict_attr_values,124428, doc_len_dict, data = 'train')
+    f.add_feature(X_test, test, product_dataframe, feature, 0.5, idf_dict_product_title, idf_dict_prod_descr, idf_dict_attr_names, idf_dict_attr_values,124428, doc_len_dict, data = 'test')
 
     #save the pre-processed data
     print('Saving data...')
-    f.save_obj(X_train,'../input_clean/X_train')
-    f.save_obj(X_test,'../input_clean/X_test')
-f.save_obj(Y_train,'../input_clean/Y_train')
+    f.save_obj(X_train,'input_clean/X_train')
+    f.save_obj(X_test,'input_clean/X_test')
+f.save_obj(Y_train,'input_clean/Y_train')
 
         
 #%%

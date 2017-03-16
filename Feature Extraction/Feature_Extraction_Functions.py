@@ -10,10 +10,10 @@ import numpy as np
 import pickle
 from collections import defaultdict
 
-attributes = pd.read_csv('../input_clean/attributes_clean.csv',encoding="ISO-8859-1")
-product_descriptions = pd.read_csv('../input_clean/product_descriptions_clean.csv')
-train = pd.read_csv('../input_clean/train_clean.csv', encoding="ISO-8859-1",index_col='id')
-test = pd.read_csv('../input_clean/test_clean.csv', encoding="ISO-8859-1",index_col='id')
+attributes = pd.read_csv('input_clean/attributes_clean.csv',encoding="ISO-8859-1")
+product_descriptions = pd.read_csv('input_clean/product_descriptions_clean.csv')
+train = pd.read_csv('input_clean/train_clean.csv', encoding="ISO-8859-1",index_col='id')
+test = pd.read_csv('input_clean/test_clean.csv', encoding="ISO-8859-1",index_col='id')
 
 #save an object (e.g. dict) with pickle
 def save_obj(obj, name = 'object' ):
@@ -143,17 +143,17 @@ def create_idf_defaultdict(search_terms, product_df, doc = 'product_title'):
 def load_idf_default_dict(search_terms, product_dataframe, doc_set = 'product_title'):
     try:
         print('Loading inverse document frequency default dict for {}...'.format(doc_set))
-        idf_dict = load_obj('../input_clean/idf_dict_'+doc_set)
+        idf_dict = load_obj('input_clean/idf_dict_'+doc_set)
     except:
         print('Failed to load inverse document frequency default dict for {}...'.format(doc_set))
         print('Creating inverse document frequency default dict for {}...'.format(doc_set))
         idf_dict = create_idf_defaultdict(search_terms, product_dataframe, doc_set)
         print('Saving inverse document frequency default dict for {}...'.format(doc_set))
-        save_obj(idf_dict,'../input_clean/idf_dict_'+doc_set)
+        save_obj(idf_dict,'input_clean/idf_dict_'+doc_set)
     return idf_dict
 
 #function to take as input the product_dataframe and either train or test dataframes, and append the 
-#product info (description, attr_names and attr_vals) to the dataframe
+#product info (description, attr_names and attr_values) to the dataframe
 def add_product_info_to_data(dataframe, product_dataframe):
     num_instances = len(dataframe)
     for i, datum in enumerate(dataframe.iterrows()):
@@ -176,42 +176,42 @@ def create_dict_of_avg_doc_lengths(product_df):
 def load_dict_of_avg_doc_lengths(product_df):
     try:
         print('Loading dictionary of average document lengths (for BM25 calculations)')
-        len_dict = load_obj('../input_clean/len_dict')
+        len_dict = load_obj('input_clean/len_dict')
     except:
         print('Failed to load dictionary of average document lengths (for BM25 calculations)')
         print('Creating dictionary of average document lengths (for BM25 calculations)')
         len_dict = create_dict_of_avg_doc_lengths(product_df)
         print('Saving dictionary of average document lengths (for BM25 calculations)')
-        save_obj(len_dict,'../input_clean/len_dict')
+        save_obj(len_dict,'input_clean/len_dict')
     return len_dict
 
 #function to load search terms
 def load_search_terms(train,test):
     try:
         print('Loading search terms...')
-        search_terms = load_obj('../input_clean/search_terms')
+        search_terms = load_obj('input_clean/search_terms')
     except:
         print('Failed to load search terms...')
         print('Retrieving search terms...')
         search_terms = get_search_terms_set(train,test)
         print('Saving search terms to file...')
-        save_obj(search_terms,'../input_clean/search_terms')
+        save_obj(search_terms,'input_clean/search_terms')
     return search_terms
 
 #function to load (or create) the datasets which include all product info
 def load_train_and_test_data_with_product_info(train_original, test_original, product_dataframe):
     try:
         print('Loading the train and test dataframes which include all product information...')
-        train = load_obj('../input_clean/train_all')
-        test = load_obj('../input_clean/test_all')
+        train = load_obj('input_clean/train_all')
+        test = load_obj('input_clean/test_all')
     except:
         print('Failed to load the train and test dataframes which include all product information...')
         print('Creating the train and test dataframes which include all product information......')
         train = add_product_info_to_data(train_original, product_dataframe)
         test = add_product_info_to_data(test_original, product_dataframe)
         print('Saving product dataframe to file...')
-        save_obj(train,'../input_clean/train_all')
-        save_obj(test,'../input_clean/test_all')
+        save_obj(train,'input_clean/train_all')
+        save_obj(test,'input_clean/test_all')
     return train, test
 
 #function to load (or create) dataframe with all the product information on it, 
@@ -219,13 +219,13 @@ def load_train_and_test_data_with_product_info(train_original, test_original, pr
 def load_product_dataframe(train,test,attributes,product_descriptions):
     try:
         print('Loading product dataframe...')
-        product_dataframe = load_obj('../input_clean/product_dataframe')
+        product_dataframe = load_obj('input_clean/product_dataframe')
     except:
         print('Failed to load product dataframe...')
         print('Creating product dataframe...')
         product_dataframe = create_product_dataframe(train,test,attributes,product_descriptions)
         print('Saving product dataframe to file...')
-        save_obj(product_dataframe,'../input_clean/product_dataframe')
+        save_obj(product_dataframe,'input_clean/product_dataframe')
     return product_dataframe
 
 #function to compute term frequency
@@ -460,12 +460,12 @@ def add_bm25_to_X(X, df, idf_dict, avg_doc_len, doc =  'product_title', bm25_typ
 
 #function to add a feature to X, computed from the data in dataframe (i.e. train/test)
 #the feature is only added if it doesn't already exist within the dataframe
-def add_feature(X, dataframe, product_df, feature = ('_tf_','product_title','natural'), K = 0.5, idf_dict_prod_title = None, idf_dict_prod_descr = None, idf_dict_attr_names = None, idf_dict_attr_vals = None, N = 124428, avg_len_dict = None, data = 'train'):
+def add_feature(X, dataframe, product_df, feature = ('_tf_','product_title','natural'), K = 0.5, idf_dict_prod_title = None, idf_dict_prod_descr = None, idf_dict_attr_names = None, idf_dict_attr_values = None, N = 124428, avg_len_dict = None, data = 'train'):
 
     idf_dicts = {'product_title' : idf_dict_prod_title,
                  'prod_descr' : idf_dict_prod_descr,
                  'attr_names' : idf_dict_attr_names,
-                 'attr_vals' : idf_dict_attr_vals}
+                 'attr_values' : idf_dict_attr_values}
     attr_type = feature[0]
     feat_doc = feature[1]
     
@@ -520,3 +520,15 @@ def add_feature(X, dataframe, product_df, feature = ('_tf_','product_title','nat
             add_bm25_to_X(X, dataframe, idf_dict, avg_len_dict[feat_doc], feat_doc, bm25_type, k1, b)
         else:            
             print('Feature \'{}\' already in dataset'.format(str(feat_doc + attr_type + bm25_type)))
+
+            
+    
+#==============================================================================
+# import timeit
+# X_ = pd.DataFrame(index = train.index)
+# time1 = timeit.time.time()
+# add_term_frequency_to_X(X_,train,'product_title','natural')
+# #add_term_frequency_to_X2(X_,train,product_dataframe,'product_title','natural')
+# time2 = timeit.time.time()
+# print(time2-time1)
+#==============================================================================
