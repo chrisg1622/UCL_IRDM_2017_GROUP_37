@@ -72,24 +72,24 @@ else:
 #list of features to add to the data
 #note: features in the list are only added if they are not already in the dataframe
 features = [
-            #tf features should contain: doc & tf_type
+            #tf features should contain: doc, query & tf_type
             #tf_type is the type of tf to calculate
-            ('_tf_','product_title','natural'),
-            ('_tf_','product_title','natural_avg'),
-            ('_tf_','product_title','log_norm_avg'),
-            ('_tf_','product_title','double_norm_0.5_avg'),
-            ('_tf_','prod_descr','natural'),
-            ('_tf_','prod_descr','natural_avg'),
-            ('_tf_','prod_descr','log_norm_avg'),
-            ('_tf_','prod_descr','double_norm_0.5_avg'),
-            ('_tf_','attr_names','natural'),
-            ('_tf_','attr_names','natural_avg'),
-            ('_tf_','attr_names','log_norm_avg'),
-            ('_tf_','attr_names','double_norm_0.5_avg'),
-            ('_tf_','attr_values','natural'),
-            ('_tf_','attr_values','natural_avg'),
-            ('_tf_','attr_values','log_norm_avg'),
-            ('_tf_','attr_values','double_norm_0.5_avg'),
+            ('_tf_','product_title','search_term','natural'),
+            ('_tf_','product_title','search_term','natural_avg'),
+            ('_tf_','product_title','search_term','log_norm_avg'),
+            ('_tf_','product_title','search_term','double_norm_0.5_avg'),
+            ('_tf_','prod_descr','search_term','natural'),
+            ('_tf_','prod_descr','search_term','natural_avg'),
+            ('_tf_','prod_descr','search_term','log_norm_avg'),
+            ('_tf_','prod_descr','search_term','double_norm_0.5_avg'),
+            ('_tf_','attr_names','search_term','natural'),
+            ('_tf_','attr_names','search_term','natural_avg'),
+            ('_tf_','attr_names','search_term','log_norm_avg'),
+            ('_tf_','attr_names','search_term','double_norm_0.5_avg'),
+            ('_tf_','attr_values','search_term','natural'),
+            ('_tf_','attr_values','search_term','natural_avg'),
+            ('_tf_','attr_values','search_term','log_norm_avg'),
+            ('_tf_','attr_values','search_term','double_norm_0.5_avg'),
 
             #length features should contain: doc
             ('_length','product_title'),
@@ -98,74 +98,56 @@ features = [
             ('_length','attr_values'),
             ('_length','search_term'),
 
-            #idf features should contain: doc and idf_type
-            #idf type is the type of idf to use
-            ('_idf_','product_title', 'smooth'),
-            ('_idf_','product_title', 'smooth_avg'),
-            ('_idf_','product_title', 'max_avg'),
-            ('_idf_','product_title', 'prob_avg'),
-            ('_idf_','prod_descr', 'smooth'),
-            ('_idf_','prod_descr', 'smooth_avg'),
-            ('_idf_','prod_descr', 'max_avg'),
-            ('_idf_','prod_descr', 'prob_avg'),
-            ('_idf_','attr_names', 'smooth'),
-            ('_idf_','attr_names', 'smooth_avg'),
-            ('_idf_','attr_names', 'max_avg'),
-            ('_idf_','attr_names', 'prob_avg'),
-            ('_idf_','attr_values', 'smooth'),
-            ('_idf_','attr_values', 'smooth_avg'),
-            ('_idf_','attr_values', 'max_avg'),
-            ('_idf_','attr_values', 'prob_avg'),
 
-            #tf_idf features should contain: doc, tf_type, idf_type, tf_idf_type
+            #tf_idf features should contain: doc, query, tf_type, idf_type, tf_idf_type
             #tf_idf is the type of tf_idf to calculate (sum/average across query words)
-            ('_tf_idf_','product_title','natural','smooth','sum'),
-            ('_tf_idf_','product_title','natural','max','sum'),
-            ('_tf_idf_','product_title','natural','prob','sum'),
-            ('_tf_idf_','prod_descr','natural','smooth','sum'),
-            ('_tf_idf_','prod_descr','natural','max','sum'),
-            ('_tf_idf_','prod_descr','natural','prob','sum'),
-            ('_tf_idf_','attr_names','natural','smooth','sum'),
-            ('_tf_idf_','attr_names','natural','max','sum'),
-            ('_tf_idf_','attr_names','natural','prob','sum'),
-            ('_tf_idf_','attr_values','natural','smooth','sum'),
-            ('_tf_idf_','attr_values','natural','max','sum'),
-            ('_tf_idf_','attr_values','natural','prob','sum'),
+            ('_tf_idf_','product_title','search_term','natural','smooth','sum'),
+            ('_tf_idf_','product_title','search_term','natural','max','sum'),
+            ('_tf_idf_','product_title','search_term','natural','prob','sum'),
+            ('_tf_idf_','prod_descr','search_term','natural','smooth','sum'),
+            ('_tf_idf_','prod_descr','search_term','natural','max','sum'),
+            ('_tf_idf_','prod_descr','search_term','natural','prob','sum'),
+            ('_tf_idf_','attr_names','search_term','natural','smooth','sum'),
+            ('_tf_idf_','attr_names','search_term','natural','max','sum'),
+            ('_tf_idf_','attr_names','search_term','natural','prob','sum'),
+            ('_tf_idf_','attr_values','search_term','natural','smooth','sum'),
+            ('_tf_idf_','attr_values','search_term','natural','max','sum'),
+            ('_tf_idf_','attr_values','search_term','natural','prob','sum'),
 
-            ('_tf_idf_','product_title','log_norm','smooth','sum'),
-            ('_tf_idf_','product_title','log_norm','max','sum'),
-            ('_tf_idf_','product_title','log_norm','prob','sum'),
-            ('_tf_idf_','prod_descr','log_norm','smooth','sum'),
-            ('_tf_idf_','prod_descr','log_norm','max','sum'),
-            ('_tf_idf_','prod_descr','log_norm','prob','sum'),
-            ('_tf_idf_','attr_names','log_norm','smooth','sum'),
-            ('_tf_idf_','attr_names','log_norm','max','sum'),
-            ('_tf_idf_','attr_names','log_norm','prob','sum'),
-            ('_tf_idf_','attr_values','log_norm','smooth','sum'),
-            ('_tf_idf_','attr_values','log_norm','max','sum'),
-            ('_tf_idf_','attr_values','log_norm','prob','sum'),
+            ('_tf_idf_','product_title','search_term','log_norm','smooth','sum'),
+            ('_tf_idf_','product_title','search_term','log_norm','max','sum'),
+            ('_tf_idf_','product_title','search_term','log_norm','prob','sum'),
+            ('_tf_idf_','prod_descr','search_term','log_norm','smooth','sum'),
+            ('_tf_idf_','prod_descr','search_term','log_norm','max','sum'),
+            ('_tf_idf_','prod_descr','search_term','log_norm','prob','sum'),
+            ('_tf_idf_','attr_names','search_term','log_norm','smooth','sum'),
+            ('_tf_idf_','attr_names','search_term','log_norm','max','sum'),
+            ('_tf_idf_','attr_names','search_term','log_norm','prob','sum'),
+            ('_tf_idf_','attr_values','search_term','log_norm','smooth','sum'),
+            ('_tf_idf_','attr_values','search_term','log_norm','max','sum'),
+            ('_tf_idf_','attr_values','search_term','log_norm','prob','sum'),
 
-            #bm 25 features should contain: doc, k1, b
-            ('_bm25_','product_title', 'sum', 1.5, 0.75),
-            ('_bm25_','prod_descr', 'sum', 1.5, 0.75),
-            ('_bm25_','attr_names', 'sum', 1.5, 0.75),
-            ('_bm25_','attr_values', 'sum', 1.5, 0.75),
-            ('_bm25_','product_title', 'avg', 1.5, 0.75),
-            ('_bm25_','prod_descr', 'avg', 1.5, 0.75),
-            ('_bm25_','attr_names', 'avg', 1.5, 0.75),
-            ('_bm25_','attr_values', 'avg', 1.5, 0.75),
+            #bm 25 features should contain: doc, query k1, b
+            ('_bm25_','product_title','search_term', 'sum', 1.5, 0.75),
+            ('_bm25_','prod_descr','search_term', 'sum', 1.5, 0.75),
+            ('_bm25_','attr_names','search_term', 'sum', 1.5, 0.75),
+            ('_bm25_','attr_values','search_term', 'sum', 1.5, 0.75),
+            ('_bm25_','product_title','search_term', 'avg', 1.5, 0.75),
+            ('_bm25_','prod_descr','search_term', 'avg', 1.5, 0.75),
+            ('_bm25_','attr_names','search_term', 'avg', 1.5, 0.75),
+            ('_bm25_','attr_values','search_term', 'avg', 1.5, 0.75),
             ]
 
+f.save_obj(Y_train,'input_clean/Y_train')
 #add each feature to the data
 for feature in features:
-    f.add_feature(X_train, train, product_dataframe, feature, 0.5, idf_dict_product_title, idf_dict_prod_descr, idf_dict_attr_names, idf_dict_attr_values,124428, doc_len_dict, data = 'train')
-    f.add_feature(X_test, test, product_dataframe, feature, 0.5, idf_dict_product_title, idf_dict_prod_descr, idf_dict_attr_names, idf_dict_attr_values,124428, doc_len_dict, data = 'test')
+    X_train = f.add_feature(X_train, train, product_dataframe, feature, 0.5, idf_dict_product_title, idf_dict_prod_descr, idf_dict_attr_names, idf_dict_attr_values,124428, doc_len_dict, data = 'train')
+    X_test = f.add_feature(X_test, test, product_dataframe, feature, 0.5, idf_dict_product_title, idf_dict_prod_descr, idf_dict_attr_names, idf_dict_attr_values,124428, doc_len_dict, data = 'test')
 
     #save the pre-processed data
     print('Saving data...')
     f.save_obj(X_train,'input_clean/X_train')
     f.save_obj(X_test,'input_clean/X_test')
-f.save_obj(Y_train,'input_clean/Y_train')
 
         
 #%%

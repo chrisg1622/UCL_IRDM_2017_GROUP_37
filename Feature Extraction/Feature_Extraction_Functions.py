@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import pickle
 from collections import defaultdict
+import timeit
 
 attributes = pd.read_csv('input_clean/attributes_clean.csv',encoding="ISO-8859-1")
 product_descriptions = pd.read_csv('input_clean/product_descriptions_clean.csv')
@@ -71,19 +72,16 @@ def get_search_terms_set(train, test):
     num_instances_test = len(test)
     #add each search term from the training set to the list
     print('Retrieving search terms from training data...')
-    for i,datum in enumerate(train.iterrows()):
-        ID, row = datum
-        for search_term in row['search_term'].split():
-            search_terms.append(search_term)
+    for i,row in enumerate(train.itertuples()):
+        #the search_term column is the third one in the train df
+        search_terms += row[3].split()
         if (i+1) % 10000 == 0: print('Processed {} of {} instances...'.format(i+1,num_instances_train))
     #add each search term from the test set to the list
     print('Retrieving search terms from testing data...')
-    for i,datum in enumerate(test.iterrows()):
-        ID, row = datum
-        for search_term in row['search_term'].split():
-            search_terms.append(search_term)
+    for i,row in enumerate(test.itertuples()):
+        #the search_term column is the third one in the test df
+        search_terms += row[3].split()
         if (i+1) % 10000 == 0: print('Processed {} of {} instances...'.format(i+1,num_instances_test))
-
     return set(search_terms)
 
 #this function takes in all the product information, and puts it all in a dataframe
@@ -97,19 +95,17 @@ def create_product_dataframe(train, test, attributes, product_descriptions):
     dataframe = pd.DataFrame(index = product_uid_list)
     #go through training data and add product_titles to the dataframe
     print('Adding training data to product dataframe...')
-    for i,datum in enumerate(train.iterrows()):
-        ID, row = datum
-        product_uid = row['product_uid']
-        product_title = row['product_title']
+    for i,row in enumerate(train.itertuples()):
+        product_uid = row[1]
+        product_title = row[2]
         dataframe.loc[product_uid,'product_title'] = product_title
         if (i+1) % 10000 == 0: print('Processed {} of {} instances...'.format(i+1,num_instances_train))
     
     #go through test data and add product_titles to the dataframe
     print('Adding test data to product dataframe...')
-    for i,datum in enumerate(test.iterrows()):
-        ID, row = datum
-        product_uid = row['product_uid']
-        product_title = row['product_title']
+    for i,row in enumerate(test.itertuples()):
+        product_uid = row[1]
+        product_title = row[2]
         dataframe.loc[product_uid,'product_title'] = product_title
         if (i+1) % 10000 == 0: print('Processed {} of {} instances...'.format(i+1,num_instances_test))
     
@@ -122,16 +118,16 @@ def create_product_dataframe(train, test, attributes, product_descriptions):
         dataframe.loc[product_uid,'attr_values'] = get_attr_value_list(product_uid, get_text=True)
         if (i+1) % 10000 == 0: print('Processed {} of {} instances...'.format(i+1,num_instances_df))
     return dataframe
-    
+
 #function to create a default dict of idf values for each search term, for a particular
 #document set
-def create_idf_defaultdict(search_terms, product_df, doc = 'product_title'):
+def create_idf_defaultdict(query, product_df, doc = 'product_title'):
     idf_dict = defaultdict(float)
-    num_instances = len(search_terms)
+    num_instances = len(query)
     #add all documents (each split into a list of words) to an array
     documents = [doc.split() for doc in product_df[doc]]
     #for each search term, compute idf value
-    for i,search_term in enumerate(search_terms):
+    for i,search_term in enumerate(query):
         #count number of documents the term appears in
         idf_dict[search_term] = sum([search_term in document for document in documents])
         #after every 10 processed search terms, save progress
@@ -148,6 +144,8 @@ def load_idf_default_dict(search_terms, product_dataframe, doc_set = 'product_ti
         print('Failed to load inverse document frequency default dict for {}...'.format(doc_set))
         print('Creating inverse document frequency default dict for {}...'.format(doc_set))
         idf_dict = create_idf_defaultdict(search_terms, product_dataframe, doc_set)
+        #add max idf value, for use in max_idf calculations        
+        idf_dict['max_idf_value'] = max(idf_dict.values())        
         print('Saving inverse document frequency default dict for {}...'.format(doc_set))
         save_obj(idf_dict,'input_clean/idf_dict_'+doc_set)
     return idf_dict
@@ -159,8 +157,9 @@ def add_product_info_to_data(dataframe, product_dataframe):
     for i, datum in enumerate(dataframe.iterrows()):
         ID, row = datum
         product_uid = row['product_uid']
+        product_info = product_dataframe.loc[product_uid]
         for attribute in ['prod_descr','attr_names','attr_values']:
-            dataframe.loc[ID, attribute] = product_dataframe.loc[product_uid, attribute]
+            dataframe.loc[ID,attribute] = product_info[attribute]
         if (i+1) % 10000 == 0: print('Processed {} of {} instances...'.format(i+1,num_instances))
     return dataframe
     
@@ -286,7 +285,9 @@ def inverse_document_frequency(idf_dict, terms, idf_type = 'smooth', N = 124428)
     
     #take the sum of the max inverse document frequencies
     if idf_type == 'max':
-        return sum( [np.log( max(idf_dict.values()) / (1 + idf_dict[term]) ) for term in terms])
+        #retrieve the pre-calculate max_idf_value and compute the idf score
+        max_idf = idf_dict['max_idf_value'] 
+        return sum( [np.log( max_idf / (1 + idf_dict[term]) ) for term in terms])
 
     #take the average max inverse document frequencies
     if idf_type == 'max_avg':
@@ -345,14 +346,12 @@ def BM25(doc_words, query_terms, idf_dict, avg_doc_len, bm25_type = 'sum', k1 = 
     if bm25_type == 'avg':
         return BM25(doc_words, query_terms, idf_dict, avg_doc_len, 'sum', k1, b) / len(query_terms)
     
-    return bm25
-    
-    
+    return bm25    
 
 #this function computes the term frequency feature for the dataframe df, using
 #the document and tf type given in the function call, and adds this feature to 
 #the dataframe X
-def add_term_frequency_to_X(X, df, doc = 'product_title', tf_type = 'natural'):
+def add_term_frequency_to_X_v0(X, df, doc = 'product_title', tf_type = 'natural'):
     """inputs: X - the dataframe we want to add term frequency features to
                df - the data we want to use to get the search terms (train or test)
                product_df - the dataframe containing the information for each product
@@ -375,7 +374,7 @@ def add_term_frequency_to_X(X, df, doc = 'product_title', tf_type = 'natural'):
 #this function computes the inverse document frequency feature for the dataframe df, using
 #the idf_dict and idf type given in the function call, and adds this feature to 
 #the dataframe X
-def add_inverse_document_frequency_to_X(X, df, idf_dict, doc = 'product_title', idf_type = 'smooth', N = 124428):
+def add_inverse_document_frequency_to_X_v0(X, df, idf_dict, doc = 'product_title', idf_type = 'smooth', N = 124428):
     """inputs: X - the dataframe we want to add term frequency features to
                df - the data we want to use to get the search terms (train or test)
                idf_dict - the dictionary with the idf counts for each term in the corresponding corpus 
@@ -397,7 +396,7 @@ def add_inverse_document_frequency_to_X(X, df, idf_dict, doc = 'product_title', 
 #this function computes the tf-idf feature for the dataframe df, using
 #the idf_dict and idf type given in the function call, and adds this feature to 
 #the dataframe X
-def add_tf_idf_to_X(X, df, idf_dict, doc = 'product_title', tf_idf_type = 'sum', tf_type = 'natural', idf_type = 'smooth', idf_N = 124428, tf_K = 0.5):
+def add_tf_idf_to_X_v0(X, df, idf_dict, doc = 'product_title', tf_idf_type = 'sum', tf_type = 'natural', idf_type = 'smooth', idf_N = 124428, tf_K = 0.5):
     """inputs: X - the dataframe we want to add tf-idf features to
                df - the data we want to use to get the search terms (train or test)
                product_df - the dataframe to be used for extracting the document for idf calculation in tf-idf
@@ -424,7 +423,7 @@ def add_tf_idf_to_X(X, df, idf_dict, doc = 'product_title', tf_idf_type = 'sum',
 
 #this function computes the number of words in a given document (i.e. product title,
 #product description, etc.) and adds it as a feature to X
-def add_doc_length_to_X(X, df, doc = 'product_title'):
+def add_doc_length_to_X_v0(X, df, doc = 'product_title'):
     num_instances = len(X)
     #preprocess each data instance
     for i,datum in enumerate(df.iterrows()):
@@ -437,7 +436,7 @@ def add_doc_length_to_X(X, df, doc = 'product_title'):
 #this function computes the bm25 feature for the dataframe df, using
 #the idf_dict and idf type given in the function call, and adds this feature to 
 #the dataframe X
-def add_bm25_to_X(X, df, idf_dict, avg_doc_len, doc =  'product_title', bm25_type = 'sum', k1 = 1.5, b = 0.75):
+def add_bm25_to_X_v0(X, df, idf_dict, avg_doc_len, doc =  'product_title', bm25_type = 'sum', k1 = 1.5, b = 0.75):
     """inputs: X - the dataframe we want to add tf-idf features to
                df - the data we want to use to get the search terms (train or test)
                idf_dict - the dictionary with the idf counts for each term in the corresponding corpus 
@@ -457,6 +456,98 @@ def add_bm25_to_X(X, df, idf_dict, avg_doc_len, doc =  'product_title', bm25_typ
         if (i+1) % 10000 == 0: print('Processed {} of {} instances...'.format(i+1,num_instances))
 
 
+#this function computes the term frequency feature for the dataframe df, using
+#the document and tf type given in the function call, and adds this feature to 
+#the dataframe X
+def add_term_frequency_to_X(X, df, doc = 'product_title', query = 'search_term', tf_type = 'natural'):
+    """inputs: X - the dataframe we want to add term frequency features to
+               df - the data we want to use to get the search terms (train or test)
+               product_df - the dataframe containing the information for each product
+               doc - the column of product_df we want to use as the tf document
+               tf_type - the type of term frequency to calculate (sum, log sum, etc)
+       output: X with the new term frequency feature appended as an extra column
+    """
+    #apply the term frequency operation to every row of the dataframe
+    tf_col = df.apply(lambda x: term_frequency(x[doc].split(),x[query].split(), tf_type),axis=1)
+    #define the name for the new column    
+    col_name = str('('+doc+'-'+query+')'+'_tf_'+tf_type)
+    #convert the new feature column into a dataframe and append it to X. 
+    tf_col = pd.DataFrame(tf_col,columns = [col_name])
+    return pd.concat([X,tf_col], axis = 1)    
+
+#this function computes the inverse document frequency feature for the dataframe df, using
+#the idf_dict and idf type given in the function call, and adds this feature to 
+#the dataframe X
+def add_inverse_document_frequency_to_X(X, df, idf_dict, doc = 'product_title', query = 'search_term', idf_type = 'smooth', N = 124428):
+    """inputs: X - the dataframe we want to add term frequency features to
+               df - the data we want to use to get the search terms (train or test)
+               idf_dict - the dictionary with the idf counts for each term in the corresponding corpus 
+               doc - the document corpus we are using for idf calculation (e.g. product title)
+               idf_type - the type of inverse document frequency to calculate (sum, log sum, etc)
+       output: X with the new idf feature appended as an extra column
+    """
+    #apply the idf operation to every row of the dataframe
+    idf_col = df.apply(lambda x: inverse_document_frequency(idf_dict, x[query].split(), idf_type, N), axis=1)
+    #define the name for the new column    
+    col_name = str('('+doc+'-'+query+')'+'_idf_'+idf_type)
+    #convert the new feature column into a dataframe and append it to X. 
+    idf_col = pd.DataFrame(idf_col,columns = [col_name])
+    return pd.concat([X,idf_col], axis = 1)  
+
+#this function computes the tf-idf feature for the dataframe df, using
+#the idf_dict and idf type given in the function call, and adds this feature to 
+#the dataframe X
+def add_tf_idf_to_X(X, df, idf_dict, doc = 'product_title', query = 'search_term', tf_idf_type = 'sum', tf_type = 'natural', idf_type = 'smooth', idf_N = 124428, tf_K = 0.5):
+    """inputs: X - the dataframe we want to add tf-idf features to
+               df - the data we want to use to get the search terms (train or test)
+               product_df - the dataframe to be used for extracting the document for idf calculation in tf-idf
+               idf_dict - the dictionary with the idf counts for each term in the corresponding corpus 
+               doc - the document corpus we are using for idf calculation (e.g. product title)
+               tf_idf_type - how to aggregate tf-idf values across query terms (sum or average)
+               tf_type - the type of tf to calculate
+               idf_type - the type of inverse document frequency to calculate (sum, log sum, etc)
+               idf_N - number of docs in corpus for idf calculation
+               tf_K - value to use for K if tf_type is 'double norm K'
+       output: X with the new tf-idf feature appended as an extra column
+    """
+    #apply the tf-idf operation to every row of the dataframe
+    tf_idf_col = df.apply(lambda x: tf_idf(x[doc].split(), idf_dict, x[query].split(), tf_idf_type, tf_type, idf_type, idf_N, tf_K), axis=1)
+    #define the name for the new column    
+    col_name = str('('+doc+'-'+query+')'+'_tf_idf_('+tf_type+'-'+idf_type+')_'+tf_idf_type)
+    #convert the new feature column into a dataframe and append it to X. 
+    tf_idf_col = pd.DataFrame(tf_idf_col,columns = [col_name])
+    return pd.concat([X,tf_idf_col], axis = 1)  
+
+#this function computes the number of words in a given document (i.e. product title,
+#product description, etc.) and adds it as a feature to X
+def add_doc_length_to_X(X, df, doc = 'product_title'):
+    #calculate the length of the document in each column
+    doc_len_col = df.apply(lambda x: len(x[doc].split()),axis=1)    
+    #define the name for the new column    
+    col_name = str(doc+'_length')
+    #convert the new feature column into a dataframe and append it to X. 
+    doc_len_col = pd.DataFrame(doc_len_col,columns = [col_name])
+    return pd.concat([X,doc_len_col], axis = 1) 
+
+#this function computes the bm25 feature for the dataframe df, using
+#the idf_dict and idf type given in the function call, and adds this feature to 
+#the dataframe X
+def add_bm25_to_X(X, df, idf_dict, avg_doc_len, doc =  'product_title', query = 'search_term', bm25_type = 'sum', k1 = 1.5, b = 0.75):
+    """inputs: X - the dataframe we want to add bm25 features to
+               df - the data we want to use to get the search terms (train or test)
+               idf_dict - the dictionary with the idf counts for each term in the corresponding corpus 
+               avg_doc_len - the average length of documents of the same type of the given doc (e.g. avg product title length)
+               doc - the document corpus we are using for idf calculation (e.g. product title)
+               query - the query we are using for the calculation
+       output: None - X is changed when the function is called
+    """
+    #apply the bm25 operation to every row of the dataframe
+    bm25_col = df.apply(lambda x: BM25(x[doc].split(), x[query].split(), idf_dict, avg_doc_len, bm25_type, k1, b), axis=1)
+    #define the name for the new column    
+    col_name = str('('+doc+'-'+query+')'+'_bm25_'+bm25_type)
+    #convert the new feature column into a dataframe and append it to X. 
+    bm25_col = pd.DataFrame(bm25_col,columns = [col_name])
+    return pd.concat([X,bm25_col], axis = 1)  
 
 #function to add a feature to X, computed from the data in dataframe (i.e. train/test)
 #the feature is only added if it doesn't already exist within the dataframe
@@ -469,58 +560,81 @@ def add_feature(X, dataframe, product_df, feature = ('_tf_','product_title','nat
     attr_type = feature[0]
     feat_doc = feature[1]
     
+    #set the output, so if the feature is already in the dataframe, the same X is returned
+    X_new = X    
+    
     # add the term frequency feature to X
     if attr_type == '_tf_':
-        tf_type = feature[2]
-        print('Adding feature \'{}\' to {} data'.format(str(feat_doc + attr_type + tf_type), data))
-        if str(feat_doc + attr_type + tf_type) not in X.columns:
-            add_term_frequency_to_X(X, dataframe, doc=feat_doc,tf_type=tf_type)
+        feat_query = feature[2]
+        tf_type = feature[3]
+        new_feature_name = str('('+feat_doc + '-' + feat_query +')' + attr_type + tf_type)
+        print('Adding feature \'{}\' to {} data'.format(new_feature_name, data))
+        if new_feature_name not in X.columns:
+            time1 = timeit.time.time()            
+            X_new = add_term_frequency_to_X(X, dataframe, doc=feat_doc,query=feat_query,tf_type=tf_type)
+            print('Feature added, took {:4f}s'.format(timeit.time.time() - time1))    
         else:
-            print('Feature \'{}\' already in dataset'.format(str(feat_doc + attr_type + tf_type)))
+            print('Feature \'{}\' already in dataset'.format(new_feature_name))
     
     #add the document length to X
     if attr_type == '_length':
-        print('Adding feature \'{}\' to {} data'.format(str(feat_doc+attr_type), data))
-        if str(feat_doc+attr_type) not in X.columns:
-            add_doc_length_to_X(X, dataframe, doc = feat_doc)
+        new_feature_name = str(feat_doc+attr_type)
+        print('Adding feature \'{}\' to {} data'.format(new_feature_name, data))
+        if new_feature_name not in X.columns:
+            time1 = timeit.time.time()            
+            X_new = add_doc_length_to_X(X, dataframe, doc = feat_doc)
+            print('Feature added, took {:4f}s'.format(timeit.time.time() - time1))  
         else:
-            print('Feature \'{}\' already in dataset'.format(str(feat_doc+attr_type)))
+            print('Feature \'{}\' already in dataset'.format(new_feature_name))
             
     #add the inverted document frequency feature to X
     if attr_type == '_idf_':
-        idf_type = feature[2]
+        feat_query = feature[2]
+        idf_type = feature[3]
         idf_dict = idf_dicts[feat_doc]
-        print('Adding feature \'{}\' to {} data'.format(str(feat_doc + attr_type + idf_type),data))
-        if str(feat_doc + attr_type + idf_type) not in X.columns:
-            add_inverse_document_frequency_to_X(X, dataframe, idf_dict, doc = feat_doc, idf_type = idf_type, N = N)
+        new_feature_name = str('('+feat_doc + '-' + feat_query +')' + attr_type + idf_type)
+        print('Adding feature \'{}\' to {} data'.format(new_feature_name,data))
+        if new_feature_name not in X.columns:
+            time1 = timeit.time.time()            
+            X_new = add_inverse_document_frequency_to_X(X, dataframe, idf_dict, doc = feat_doc, query = feat_query, idf_type = idf_type, N = N)
+            print('Feature added, took {:4f}s'.format(timeit.time.time() - time1))  
         else:
-            print('Feature \'{}\' already in dataset'.format(str(feat_doc + attr_type + idf_type)))
+            print('Feature \'{}\' already in dataset'.format(new_feature_name))
 
 
     #add the tf-idf feature to X
     if attr_type == '_tf_idf_':
-        tf_type = feature[2]
-        idf_type = feature[3]
-        tf_idf_type = feature[4]
+        feat_query = feature[2]
+        tf_type = feature[3]
+        idf_type = feature[4]
+        tf_idf_type = feature[5]
         idf_dict = idf_dicts[feat_doc]
-        print('Adding feature \'{}\' to {} data'.format(str(feat_doc + attr_type + '(' + tf_type + '-' + idf_type + ')_' + tf_idf_type),data))        
-        if str(feat_doc + attr_type + '(' + tf_type + '-' + idf_type + ')_' + tf_idf_type) not in X.columns:
-            add_tf_idf_to_X(X, dataframe, idf_dict, doc = feat_doc, tf_idf_type = tf_idf_type, tf_type = tf_type, idf_type = idf_type, idf_N = N, tf_K = K)
+        new_feature_name = str('('+feat_doc + '-' + feat_query +')' + attr_type + '(' + tf_type + '-' + idf_type + ')_' + tf_idf_type)
+        print('Adding feature \'{}\' to {} data'.format(new_feature_name,data))        
+        if new_feature_name not in X.columns:
+            time1 = timeit.time.time()            
+            X_new = add_tf_idf_to_X(X, dataframe, idf_dict, doc = feat_doc, query = feat_query, tf_idf_type = tf_idf_type, tf_type = tf_type, idf_type = idf_type, idf_N = N, tf_K = K)
+            print('Feature added, took {:4f}s'.format(timeit.time.time() - time1))  
         else:            
-            print('Feature \'{}\' already in dataset'.format(str(feat_doc + attr_type + '(' + tf_type + '-' + idf_type + ')_' + tf_idf_type)))
+            print('Feature \'{}\' already in dataset'.format(new_feature_name))
 
     #add the bm25 feature to X
     if attr_type == '_bm25_':
-        bm25_type = feature[2]
-        k1 = feature[3]
-        b = feature[4]        
+        feat_query = feature[2]
+        bm25_type = feature[3]
+        k1 = feature[4]
+        b = feature[5]        
         idf_dict = idf_dicts[feat_doc]
-        print('Adding feature \'{}\' to {} data'.format(str(feat_doc + attr_type + bm25_type),data))        
-        if str(feat_doc + attr_type) not in X.columns:
-            add_bm25_to_X(X, dataframe, idf_dict, avg_len_dict[feat_doc], feat_doc, bm25_type, k1, b)
+        new_feature_name = str('('+feat_doc + '-' + feat_query +')' + attr_type + bm25_type)
+        print('Adding feature \'{}\' to {} data'.format(new_feature_name,data))        
+        if new_feature_name not in X.columns:
+            time1 = timeit.time.time()            
+            X_new = add_bm25_to_X(X, dataframe, idf_dict, avg_len_dict[feat_doc], feat_doc, feat_query, bm25_type, k1, b)
+            print('Feature added, took {:4f}s'.format(timeit.time.time() - time1))  
         else:            
-            print('Feature \'{}\' already in dataset'.format(str(feat_doc + attr_type + bm25_type)))
+            print('Feature \'{}\' already in dataset'.format(new_feature_name))
 
+    return X_new
             
     
 #==============================================================================
@@ -532,3 +646,5 @@ def add_feature(X, dataframe, product_df, feature = ('_tf_','product_title','nat
 # time2 = timeit.time.time()
 # print(time2-time1)
 #==============================================================================
+
+#a = train.apply(lambda x: f.term_frequency(x['product_title'].split(),x['search_term'].split()),axis=1)
