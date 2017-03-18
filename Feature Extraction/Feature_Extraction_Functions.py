@@ -121,33 +121,36 @@ def create_product_dataframe(train, test, attributes, product_descriptions):
 
 #function to create a default dict of idf values for each search term, for a particular
 #document set
-def create_idf_defaultdict(query, product_df, doc = 'product_title'):
-    idf_dict = defaultdict(float)
-    num_instances = len(query)
-    #add all documents (each split into a list of words) to an array
-    documents = [doc.split() for doc in product_df[doc]]
-    #for each search term, compute idf value
-    for i,search_term in enumerate(query):
-        #count number of documents the term appears in
-        idf_dict[search_term] = sum([search_term in document for document in documents])
-        #after every 10 processed search terms, save progress
-        if (i+1) % 1000 == 0: print('Processed {} of {} instances...'.format(i+1,num_instances))
-
-    return idf_dict
+def create_idf_defaultdict(query_terms, docs):
+    idf_dict_all = defaultdict(float)
+    docs_df = pd.DataFrame(docs)
+    #for every document sentence in docs 
+    for ID,row in docs_df.itertuples():
+        #for each unique word in the document
+        for word in set(row.split()):
+            #increment the number of sentences which that word appears in by 1
+            idf_dict_all[word] += 1.0
+    #create a dict to store number of documents each query word appears in
+    idf_dict_query_terms = defaultdict(float)
+    for word in query_terms:
+        idf_dict_query_terms[word] = idf_dict_all[word]
+    return idf_dict_query_terms
 
 #function to load idf default dicts for a given document set (e.g. product_title)
-def load_idf_default_dict(search_terms, product_dataframe, doc_set = 'product_title'):
+def load_idf_default_dict(search_terms, product_dataframe, query_set='search_term', doc_set = 'product_title'):
     try:
-        print('Loading inverse document frequency default dict for {}...'.format(doc_set))
-        idf_dict = load_obj('input_clean/idf_dict_'+doc_set)
+        print('Loading inverse document frequency default dict for {}...'.format(query_set+'-'+doc_set))
+        idf_dict = load_obj('input_clean/idf_dict_'+query_set+'-'+doc_set)
     except:
-        print('Failed to load inverse document frequency default dict for {}...'.format(doc_set))
-        print('Creating inverse document frequency default dict for {}...'.format(doc_set))
-        idf_dict = create_idf_defaultdict(search_terms, product_dataframe, doc_set)
+        print('Failed to load inverse document frequency default dict for {}...'.format(query_set+'-'+doc_set))
+        print('Creating inverse document frequency default dict for {}...'.format(query_set+'-'+doc_set))
+        t1 = timeit.time.time()        
+        idf_dict = create_idf_defaultdict(search_terms, product_dataframe)
         #add max idf value, for use in max_idf calculations        
         idf_dict['max_idf_value'] = max(idf_dict.values())        
-        print('Saving inverse document frequency default dict for {}...'.format(doc_set))
-        save_obj(idf_dict,'input_clean/idf_dict_'+doc_set)
+        print('IDF default dict creation took {:f}s'.format(timeit.time.time() - t1))
+        print('Saving inverse document frequency default dict for {}...'.format(query_set+'-'+doc_set))
+        save_obj(idf_dict,'input_clean/idf_dict_'+query_set+'-'+doc_set)
     return idf_dict
 
 #function to take as input the product_dataframe and either train or test dataframes, and append the 
@@ -164,22 +167,26 @@ def add_product_info_to_data(dataframe, product_dataframe):
     return dataframe
     
 #function to store the average lengths of each type of document in a dict
-def create_dict_of_avg_doc_lengths(product_df):
+def create_dict_of_avg_doc_lengths(product_df, train, test):
     len_dict = {}
     for doc in ['product_title','prod_descr','attr_names','attr_values']:
         print('Computing average length of {} documents'.format(doc))
         len_dict[doc] = np.mean([len(doc_words.split()) for doc_words in product_df[doc]])
+    print('Computing average length of search_term documents')
+    train_search_term_sum =  sum([len(doc_words.split()) for doc_words in train['search_term']])
+    test_search_term_sum =  sum([len(doc_words.split()) for doc_words in test['search_term']])
+    len_dict['search_term'] = (train_search_term_sum + test_search_term_sum)/(len(train) + len(test))
     return len_dict
     
 #function to load (or create) the dictionary of average document lengths
-def load_dict_of_avg_doc_lengths(product_df):
+def load_dict_of_avg_doc_lengths(product_df, train, test):
     try:
         print('Loading dictionary of average document lengths (for BM25 calculations)')
         len_dict = load_obj('input_clean/len_dict')
     except:
         print('Failed to load dictionary of average document lengths (for BM25 calculations)')
         print('Creating dictionary of average document lengths (for BM25 calculations)')
-        len_dict = create_dict_of_avg_doc_lengths(product_df)
+        len_dict = create_dict_of_avg_doc_lengths(product_df, train, test)
         print('Saving dictionary of average document lengths (for BM25 calculations)')
         save_obj(len_dict,'input_clean/len_dict')
     return len_dict
@@ -196,6 +203,23 @@ def load_search_terms(train,test):
         print('Saving search terms to file...')
         save_obj(search_terms,'input_clean/search_terms')
     return search_terms
+
+#function to load search terms
+def load_terms(product_df, doc_set):
+    try:
+        print('Loading {} terms...'.format(doc_set))
+        terms = load_obj('input_clean/'+doc_set+'_terms')
+    except:
+        print('Failed to load {} terms...'.format(doc_set))
+        print('Retrieving {} terms...'.format(doc_set))
+        terms = []
+        for i,row in enumerate(pd.DataFrame(product_df[doc_set]).itertuples()):
+            terms += [term for term in row[1].split()]
+            if (i+1)%10000 == 0: print('Processed {} of {} instances'.format(i,124428))
+        terms = set(terms)
+        print('Saving {} terms to file...'.format(doc_set))
+        save_obj(terms,'input_clean/'+doc_set+'_terms')
+    return terms
 
 #function to load (or create) the datasets which include all product info
 def load_train_and_test_data_with_product_info(train_original, test_original, product_dataframe):
@@ -242,7 +266,7 @@ def term_frequency(doc, terms, tf_type = 'natural', K = 0.5):
 
     #take the average term frequency
     if tf_type == 'natural_avg':
-        return term_frequency(doc, terms, 'natural', K)/len(terms)
+        return term_frequency(doc, terms, 'natural', K)/max(len(terms),1)
             
     #take the sum of log normalised term frequencies
     if tf_type == 'log_norm':
@@ -250,7 +274,7 @@ def term_frequency(doc, terms, tf_type = 'natural', K = 0.5):
           
     #take the average log normalised term frequencies
     if tf_type == 'log_norm_avg':
-        return term_frequency(doc,terms,'log_norm', K)/len(terms)
+        return term_frequency(doc,terms,'log_norm', K)/max(len(terms),1)
     
     #take the sum of double normalised K term frequencies
     if tf_type == 'double_norm_'+str(K):
@@ -263,7 +287,7 @@ def term_frequency(doc, terms, tf_type = 'natural', K = 0.5):
 
     #take the average of double normalised K term frequencies
     if tf_type == 'double_norm_'+str(K)+'_avg':
-        return term_frequency(doc,terms,'double_norm_'+str(K), K)/len(terms)
+        return term_frequency(doc,terms,'double_norm_'+str(K), K)/max(len(terms),1)
     
     return tf
 
@@ -281,7 +305,7 @@ def inverse_document_frequency(idf_dict, terms, idf_type = 'smooth', N = 124428)
 
     #take the average smooth inverse document frequencies
     if idf_type == 'smooth_avg':
-        return inverse_document_frequency(idf_dict, terms, 'smooth', N)/len(terms)
+        return inverse_document_frequency(idf_dict, terms, 'smooth', N)/max(len(terms),1)
     
     #take the sum of the max inverse document frequencies
     if idf_type == 'max':
@@ -291,7 +315,7 @@ def inverse_document_frequency(idf_dict, terms, idf_type = 'smooth', N = 124428)
 
     #take the average max inverse document frequencies
     if idf_type == 'max_avg':
-        return inverse_document_frequency(idf_dict, terms, 'max', N)/len(terms)
+        return inverse_document_frequency(idf_dict, terms, 'max', N)/max(len(terms),1)
         
     #take the sum of the probabilistic inverse document frequencies
     if idf_type == 'prob':
@@ -299,7 +323,7 @@ def inverse_document_frequency(idf_dict, terms, idf_type = 'smooth', N = 124428)
 
     #take the average probabilistic inverse document frequencies
     if idf_type == 'prob_avg':
-        return inverse_document_frequency(idf_dict, terms, 'prob', N)/len(terms)
+        return inverse_document_frequency(idf_dict, terms, 'prob', N)/max(len(terms),1)
     
     return idf
 
@@ -322,7 +346,7 @@ def tf_idf(tf_doc, idf_dict, terms, tf_idf_type = 'sum', tf_type = 'natural', id
             
     #take the avg of tf_idf products across all query terms
     if tf_idf_type == 'avg':
-        return tf_idf(tf_doc, idf_dict, terms, 'sum', tf_type, idf_type, idf_N, tf_K)/len(terms)
+        return tf_idf(tf_doc, idf_dict, terms, 'sum', tf_type, idf_type, idf_N, tf_K)/max(len(terms),1)
     
     return TF_IDF
     
@@ -344,7 +368,7 @@ def BM25(doc_words, query_terms, idf_dict, avg_doc_len, bm25_type = 'sum', k1 = 
             idf = idf_dict[term]
             bm25 += idf * tf * (k1 + 1) / (tf + k1*(1 - b + b*(doc_len/avg_doc_len)))
     if bm25_type == 'avg':
-        return BM25(doc_words, query_terms, idf_dict, avg_doc_len, 'sum', k1, b) / len(query_terms)
+        return BM25(doc_words, query_terms, idf_dict, avg_doc_len, 'sum', k1, b) / max(len(query_terms),1)
     
     return bm25    
 
@@ -551,12 +575,8 @@ def add_bm25_to_X(X, df, idf_dict, avg_doc_len, doc =  'product_title', query = 
 
 #function to add a feature to X, computed from the data in dataframe (i.e. train/test)
 #the feature is only added if it doesn't already exist within the dataframe
-def add_feature(X, dataframe, product_df, feature = ('_tf_','product_title','natural'), K = 0.5, idf_dict_prod_title = None, idf_dict_prod_descr = None, idf_dict_attr_names = None, idf_dict_attr_values = None, N = 124428, avg_len_dict = None, data = 'train'):
+def add_feature(X, dataframe, product_df, feature = ('_tf_','product_title','natural'), K = 0.5, idf_dicts = None, N = 124428, avg_len_dict = None, data = 'train'):
 
-    idf_dicts = {'product_title' : idf_dict_prod_title,
-                 'prod_descr' : idf_dict_prod_descr,
-                 'attr_names' : idf_dict_attr_names,
-                 'attr_values' : idf_dict_attr_values}
     attr_type = feature[0]
     feat_doc = feature[1]
     
@@ -591,7 +611,7 @@ def add_feature(X, dataframe, product_df, feature = ('_tf_','product_title','nat
     if attr_type == '_idf_':
         feat_query = feature[2]
         idf_type = feature[3]
-        idf_dict = idf_dicts[feat_doc]
+        idf_dict = idf_dicts[feat_query+'-'+feat_doc]
         new_feature_name = str('('+feat_doc + '-' + feat_query +')' + attr_type + idf_type)
         print('Adding feature \'{}\' to {} data'.format(new_feature_name,data))
         if new_feature_name not in X.columns:
@@ -608,7 +628,7 @@ def add_feature(X, dataframe, product_df, feature = ('_tf_','product_title','nat
         tf_type = feature[3]
         idf_type = feature[4]
         tf_idf_type = feature[5]
-        idf_dict = idf_dicts[feat_doc]
+        idf_dict = idf_dicts[feat_query+'-'+feat_doc]
         new_feature_name = str('('+feat_doc + '-' + feat_query +')' + attr_type + '(' + tf_type + '-' + idf_type + ')_' + tf_idf_type)
         print('Adding feature \'{}\' to {} data'.format(new_feature_name,data))        
         if new_feature_name not in X.columns:
@@ -624,7 +644,7 @@ def add_feature(X, dataframe, product_df, feature = ('_tf_','product_title','nat
         bm25_type = feature[3]
         k1 = feature[4]
         b = feature[5]        
-        idf_dict = idf_dicts[feat_doc]
+        idf_dict = idf_dicts[feat_query+'-'+feat_doc]
         new_feature_name = str('('+feat_doc + '-' + feat_query +')' + attr_type + bm25_type)
         print('Adding feature \'{}\' to {} data'.format(new_feature_name,data))        
         if new_feature_name not in X.columns:

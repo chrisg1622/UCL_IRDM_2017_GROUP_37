@@ -24,9 +24,9 @@ def post_process_preds(y_pred):
 print('Attempting to load pre-processed data...')
 try:
     #load pre-processed training data
-    X_train = f.load_obj('input/X_train')
-    X_test = f.load_obj('input/X_test')
-    Y_train = f.load_obj('input/Y_train')
+    X_train = f.load_obj('input_clean/X_train')
+    X_test = f.load_obj('input_clean/X_test')
+    Y_train = f.load_obj('input_clean/Y_train')
     print('Pre-processed data successfully loaded...')
 except:
     print('Pre-processed data failed to load, ensure the working directory is correct...')

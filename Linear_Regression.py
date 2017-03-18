@@ -24,7 +24,7 @@ def post_process_preds(y_pred):
 print('Attempting to load pre-processed data...')
 try:
     #load pre-processed training data
-    X_train = f.load_obj('input_clean/X_train')
+    X_train = f.load_obj('input_cleanX_train')
     X_test = f.load_obj('input_clean/X_test')
     Y_train = f.load_obj('input_clean/Y_train')
     print('Pre-processed data successfully loaded...')
@@ -39,9 +39,10 @@ rmse_scores = []
 fold = 1
 print('Starting 10-fold cross validation')
 for train_index, test_index in folds.split(X_train):
+    
     #retrieve train - test split for current fold
-    x_train = X_train.iloc[train_index,:]
-    x_test = X_train.iloc[test_index,:]
+    x_train = X_train.iloc[train_index]
+    x_test = X_train.iloc[test_index]
     y_train = Y_train.iloc[train_index]
     y_test = Y_train.iloc[test_index]
     #create model

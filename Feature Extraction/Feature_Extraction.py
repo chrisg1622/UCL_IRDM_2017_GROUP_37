@@ -23,15 +23,28 @@ train, test = f.load_train_and_test_data_with_product_info(train_original, test_
     
 #try to load search terms
 search_terms = f.load_search_terms(train,test)
+product_title_terms = f.load_terms(product_dataframe,'product_title')
+prod_descr_terms = f.load_terms(product_dataframe,'prod_descr')
+attr_names_terms = f.load_terms(product_dataframe,'attr_names')
+attr_values_terms = f.load_terms(product_dataframe,'attr_values')
     
 #try to load the dictionary containing average document lengths, for BM25 calculations
-doc_len_dict = f.load_dict_of_avg_doc_lengths(product_dataframe)
-    
-#try to load the defaultdicts containing idf values
-idf_dict_product_title = f.load_idf_default_dict(search_terms,product_dataframe,'product_title')
-idf_dict_prod_descr = f.load_idf_default_dict(search_terms,product_dataframe,'prod_descr')
-idf_dict_attr_names = f.load_idf_default_dict(search_terms,product_dataframe,'attr_names')
-idf_dict_attr_values = f.load_idf_default_dict(search_terms,product_dataframe,'attr_values')
+doc_len_dict = f.load_dict_of_avg_doc_lengths(product_dataframe, train, test)
+
+#represent search terms as a document, for use in reverse idf calculation
+search_term_df = pd.concat([train['search_term'],test['search_term']])
+
+#try to load the defaultdicts containing idf values for (query,doc) pairs
+idf_dicts = {}
+idf_dicts['search_term-product_title'] = f.load_idf_default_dict(search_terms,product_dataframe['product_title'],'search_term','product_title')
+idf_dicts['search_term-prod_descr'] = f.load_idf_default_dict(search_terms,product_dataframe['prod_descr'],'search_term','prod_descr')
+idf_dicts['search_term-attr_names'] = f.load_idf_default_dict(search_terms,product_dataframe['attr_names'],'search_term','attr_names')
+idf_dicts['search_term-attr_values'] = f.load_idf_default_dict(search_terms,product_dataframe['attr_values'],'search_term','attr_values')
+idf_dicts['product_title-search_term'] = f.load_idf_default_dict(product_title_terms,search_term_df,'product_title','search_term')
+idf_dicts['prod_descr-search_term'] = f.load_idf_default_dict(prod_descr_terms,search_term_df,'prod_descr','search_term')
+idf_dicts['attr_names-search_term'] = f.load_idf_default_dict(attr_names_terms,search_term_df,'attr_names','search_term')
+idf_dicts['attr_values-search_term'] = f.load_idf_default_dict(attr_values_terms,search_term_df,'attr_values','search_term')
+
 
 #have a look at data for the first product uid
 #attributes.loc[attributes['product_uid']==100001]
@@ -127,6 +140,13 @@ features = [
             ('_tf_idf_','attr_values','search_term','log_norm','max','sum'),
             ('_tf_idf_','attr_values','search_term','log_norm','prob','sum'),
 
+            #tf-idf features, treating 'search_term' as the document
+            ('_tf_idf_','search_term','product_title','natural','smooth','sum'),
+            ('_tf_idf_','search_term','prod_descr','natural','smooth','sum'),
+            ('_tf_idf_','search_term','attr_names','natural','smooth','sum'),
+            ('_tf_idf_','search_term','attr_values','natural','smooth','sum'),
+
+
             #bm 25 features should contain: doc, query k1, b
             ('_bm25_','product_title','search_term', 'sum', 1.5, 0.75),
             ('_bm25_','prod_descr','search_term', 'sum', 1.5, 0.75),
@@ -136,18 +156,27 @@ features = [
             ('_bm25_','prod_descr','search_term', 'avg', 1.5, 0.75),
             ('_bm25_','attr_names','search_term', 'avg', 1.5, 0.75),
             ('_bm25_','attr_values','search_term', 'avg', 1.5, 0.75),
+            #bm25 features where we treat 'search_term' as the document
+            ('_bm25_','search_term', 'product_title','sum', 1.5, 0.75),
+            ('_bm25_','search_term', 'prod_descr','sum', 1.5, 0.75),
+            ('_bm25_','search_term', 'attr_names','sum', 1.5, 0.75),
+            ('_bm25_','search_term', 'attr_values','sum', 1.5, 0.75),
+            ('_bm25_','search_term', 'product_title','avg', 1.5, 0.75),
+            ('_bm25_','search_term', 'prod_descr','avg', 1.5, 0.75),
+            ('_bm25_','search_term', 'attr_names','avg', 1.5, 0.75),
+            ('_bm25_','search_term', 'attr_values','avg', 1.5, 0.75),
             ]
 
 f.save_obj(Y_train,'input_clean/Y_train')
 #add each feature to the data
 for feature in features:
-    X_train = f.add_feature(X_train, train, product_dataframe, feature, 0.5, idf_dict_product_title, idf_dict_prod_descr, idf_dict_attr_names, idf_dict_attr_values,124428, doc_len_dict, data = 'train')
-    X_test = f.add_feature(X_test, test, product_dataframe, feature, 0.5, idf_dict_product_title, idf_dict_prod_descr, idf_dict_attr_names, idf_dict_attr_values,124428, doc_len_dict, data = 'test')
+    X_train = f.add_feature(X_train, train, product_dataframe, feature, 0.5, idf_dicts, 124428, doc_len_dict, data = 'train')
+    X_test = f.add_feature(X_test, test, product_dataframe, feature, 0.5, idf_dicts,124428, doc_len_dict, data = 'test')
 
-    #save the pre-processed data
-    print('Saving data...')
-    f.save_obj(X_train,'input_clean/X_train')
-    f.save_obj(X_test,'input_clean/X_test')
+#save the pre-processed data
+print('Saving data...')
+f.save_obj(X_train,'input_clean/X_train')
+f.save_obj(X_test,'input_clean/X_test')
 
         
 #%%
