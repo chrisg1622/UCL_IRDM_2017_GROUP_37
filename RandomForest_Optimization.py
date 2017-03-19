@@ -36,9 +36,9 @@ X_train, X_test, Y_train, Y_test = train_test_split(X, Y, train_size = 0.7, rand
 
 #define possible params for random search
 params = {
-            'n_estimators': [10,20,40,80,160,320],
+            'n_estimators': [160,200,250,300,350,400,450,500],
             'max_features': ['auto','sqrt','log2'],
-            'max_depth': [4,8,16,32,64],
+            'max_depth': [4,8,12,16,20,30,40,50,60],
             'n_jobs': [3]
           }
 
