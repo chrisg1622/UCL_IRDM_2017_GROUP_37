@@ -57,7 +57,7 @@ N_feats = X_train.shape[1]
 N_instances = X_train.shape[0]
 
 regularizers = {'L1':tf.contrib.layers.l1_regularizer, 'L2':tf.contrib.layers.l2_regularizer}
-activations = {'relu':tf.nn.relu, 'sigmoid':tf.nn.sigmoid,'None': None}
+activations = {'relu':tf.nn.relu, 'sigmoid':tf.nn.sigmoid,'elu':tf.nn.elu, 'softplus':tf.nn.softplus,'None': None}
 optimizers = {'Adam':tf.train.AdamOptimizer, 'SGD':tf.train.GradientDescentOptimizer}
 
 #parameters
@@ -66,7 +66,7 @@ num_hidden_layers_ = [1,2,3,4,5,6]
 hidden_layer_size_ = [25,50,100,200,400,800]
 hidden_regularizer_ = ['L1', 'L2']
 hidden_regularisation_ = [0.1,0.2,0.5,1.0,2.0]
-hidden_activation_ = ['relu','sigmoid', 'None']
+hidden_activation_ = ['relu','sigmoid', 'elu', 'softplus', 'None']
 dropout_keep_prob_ = [0.5,0.6,0.7,0.8,0.9,1.0]
 learning_rate_ = [0.01,0.001,0.0001]
 decay_learning_rate_ = [True,False]
