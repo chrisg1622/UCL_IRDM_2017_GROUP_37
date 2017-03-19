@@ -1,0 +1,6 @@
+Round,batch_size,best epoch training_time,best_test_rmse,best_test_rmse_epoch,clip_gradients,decay_learning_rate,dropout_keep_prob,hidden_activation,hidden_layer_size,hidden_regularisation,hidden_regularizer,learning_rate,num_hidden_layers,optimizer
+0,128.0,17s,0.5309090784458462,19.0,True,False,0.8,<function sigmoid at 0x000001C2CB000F28>,400.0,0.2,<function l1_regularizer at 0x000001C2CDE43378>,0.01,4.0,<class 'tensorflow.python.training.gradient_descent.GradientDescentOptimizer'>
+1,256.0,3s,0.5271360654405784,19.0,True,False,0.7,<function sigmoid at 0x000001C2CB000F28>,25.0,1.0,<function l1_regularizer at 0x000001C2CDE43378>,0.001,6.0,<class 'tensorflow.python.training.adam.AdamOptimizer'>
+2,256.0,2s,0.5332527410925724,14.0,True,True,0.5,<function relu at 0x000001C2CB1B1840>,25.0,0.5,<function l1_regularizer at 0x000001C2CDE43378>,0.01,5.0,<class 'tensorflow.python.training.adam.AdamOptimizer'>
+3,512.0,2s,0.8456352214400339,19.0,True,True,0.5,<function sigmoid at 0x000001C2CB000F28>,100.0,0.5,<function l2_regularizer at 0x000001C2CDE43730>,0.0001,1.0,<class 'tensorflow.python.training.gradient_descent.GradientDescentOptimizer'>
+4,128.0,3s,1.2081997593898341,0.0,False,False,0.6,<function relu at 0x000001C2CB1B1840>,25.0,0.2,<function l2_regularizer at 0x000001C2CDE43730>,0.001,3.0,<class 'tensorflow.python.training.adam.AdamOptimizer'>
