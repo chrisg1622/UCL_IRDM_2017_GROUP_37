@@ -51,7 +51,7 @@ except:
     print('Previous optimization results failed to load, starting new optimization experiment...')
 
 #perform the random search several times
-for i in range(20):
+for i in range(9):
     print('\n -- Starting search iteration {} --'.format(i+1))
     n_estimators = np.random.choice(params['n_estimators'],size=1)[0]
     max_features = np.random.choice(params['max_features'],size=1)[0]

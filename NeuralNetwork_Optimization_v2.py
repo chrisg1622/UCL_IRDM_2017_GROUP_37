@@ -71,7 +71,7 @@ dropout_keep_prob_ = [0.5,0.6,0.7,0.8,0.9,1.0]
 learning_rate_ = [0.01,0.001,0.0001]
 decay_learning_rate_ = [True,False]
 clip_grads_ = [True,False]
-optimizer_ = ['Adam','SGD']
+optimizer_ = ['Adam']
 
 #palceholders for X and Y
 x = tf.placeholder(tf.float64, shape = (None, N_feats))
