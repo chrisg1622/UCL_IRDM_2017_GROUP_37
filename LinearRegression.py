@@ -30,7 +30,9 @@ try:
     print('Pre-processed data successfully loaded...')
 except:
     print('Pre-processed data failed to load, ensure the working directory is correct...')
-    
+
+#dict to store CV results
+CV_results_df = {}
 #create 10-fold CV model
 folds = KFold(n_splits=10, shuffle=True)
 #list to store rmse value at each fold
@@ -56,6 +58,7 @@ for train_index, test_index in folds.split(X_train):
     #evaluate predictions and append score to rmse scores list
     rmse_scores.append(RMSE(y_test,y_pred_pp))
     print('Fold: {}, \t RMSE: {:4f}'.format(fold, rmse_scores[-1]))
+    CV_results_df['rmse_Fold_'+str(fold)] = rmse_scores[-1]
     fold += 1
 
 #compute mean and std deviation of rmse scores
@@ -64,6 +67,10 @@ std_rmse = np.std(rmse_scores)
 
 print('10 fold CV rmse mean: {:4f}'.format(mean_rmse))
 print('10 fold CV rmse standard deviation: {:4f}'.format(std_rmse))
+CV_results_df['rmse_mean'] = mean_rmse
+CV_results_df['rmse_std'] = std_rmse
+CV_results_df = pd.DataFrame(CV_results_df, index = [0])
+CV_results_df.to_csv('output/LinearRegressionCVResults.csv')
 
 print('Training new model on training dataset...')
 #train a new model on the whole training data
@@ -78,4 +85,4 @@ predictions = post_process_preds(predictions)
 predictions = pd.DataFrame(predictions, index = X_test.index)
 print('Saving predictions to output folder...')
 #save predictions
-predictions.to_csv('output/LinearRegression.csv')
+predictions.to_csv('output/LinearRegressionPredictions.csv')
