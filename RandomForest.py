@@ -20,7 +20,7 @@ def RMSE(y,y_pred):
 def post_process_preds(y_pred):
     return np.array([max(min(y,3.0),1.0) for y in y_pred])
     
-    
+
 print('Attempting to load pre-processed data...')
 try:
     #load pre-processed training data
@@ -30,7 +30,14 @@ try:
     print('Pre-processed data successfully loaded...')
 except:
     print('Pre-processed data failed to load, ensure the working directory is correct...')
-    
+
+#Best params, taken from optimization results
+n_estimators = 350
+max_features = 'sqrt'
+max_depth = 20
+
+#dict to store CV results
+CV_results_df = {}
 #create 10-fold CV model
 folds = KFold(n_splits=10, shuffle=True)
 #list to store rmse value at each fold
@@ -45,7 +52,9 @@ for train_index, test_index in folds.split(X_train):
     y_train = Y_train.iloc[train_index]
     y_test = Y_train.iloc[test_index]
     #create model
-    model = RandomForestRegressor()
+    model = RandomForestRegressor(n_estimators = n_estimators,
+                                  max_features = max_features,
+                                  max_depth = max_depth)
     #train model
     model.fit(x_train, y_train.values.ravel())    
     #predict on the test split
@@ -55,6 +64,7 @@ for train_index, test_index in folds.split(X_train):
     #evaluate predictions and append score to rmse scores list
     rmse_scores.append(RMSE(y_test,y_pred))
     print('Fold: {}, \t RMSE: {:4f}'.format(fold, rmse_scores[-1]))
+    CV_results_df['rmse_Fold_'+str(fold)] = rmse_scores[-1]
     fold += 1
 
 #compute mean and std deviation of rmse scores
@@ -63,10 +73,16 @@ std_rmse = np.std(rmse_scores)
 
 print('10 fold CV rmse mean: {:4f}'.format(mean_rmse))
 print('10 fold CV rmse standard deviation: {:4f}'.format(std_rmse))
+CV_results_df['rmse_mean'] = mean_rmse
+CV_results_df['rmse_std'] = std_rmse
+CV_results_df = pd.DataFrame(CV_results_df, index = [0])
+CV_results_df.to_csv('output/RandomForestCVResults.csv')
 
 print('Training new model on training dataset...')
 #train a new model on the whole training data
-model = RandomForestRegressor()
+model = RandomForestRegressor(n_estimators = n_estimators,
+                              max_features = max_features,
+                              max_depth = max_depth)
 model.fit(X_train,Y_train.values.ravel())
 print('Predicting on test dataset...')
 #predict using the trained model
@@ -77,4 +93,4 @@ predictions = post_process_preds(predictions)
 predictions = pd.DataFrame(predictions, index = X_test.index)
 print('Saving predictions to output folder...')
 #save predictions
-predictions.to_csv('output/RandomForest.csv')
+predictions.to_csv('output/RandomForestPredictions.csv')
