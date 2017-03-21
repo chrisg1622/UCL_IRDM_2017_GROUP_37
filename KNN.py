@@ -1,4 +1,5 @@
 from sklearn import svm
+from sklearn.neighbors import KNeighborsRegressor
 import pickle as p
 import pandas as pd
 from sklearn.model_selection import KFold, RandomizedSearchCV
@@ -30,16 +31,14 @@ def score_rmse(model,x,y):
     predicts = post_process_preds(pre_predicts)
     mean_sq_err = metrics.mean_squared_error(y, predicts)
     rmse = sqrt(mean_sq_err)
-    return -rmse  # Returns negative so that grid search chooses the model with the lowest score
-
+    return -rmse # Returns negative so that grid search chooses the model with the lowest score
 
 def predict_to_csv(model,x_test):
     print("Starting predictions...")
     predicts = model.predict(x_test)
-    predicts = post_process_preds(predicts)
     df = pd.DataFrame(predicts, index=x_test.index)
-    df.to_csv('output/SVMPredictions.csv')
-    print("Predictions done and written on output/SVMPredictions.csv")
+    df.to_csv('output/KNNPredictions.csv')
+    print("Predictions done and written on output/KNNPredictions.csv")
 
     return
 
@@ -73,36 +72,17 @@ def cv_tocsv(cv):
     df = df.T
     df['mean']=df.mean(axis=1)
     df['sd'] = df.std(axis=1)
-    df.to_csv('output/SVMCVResults.csv')
-    print("Cross validation results written to SVMResults.csv")
+    df.to_csv('output/KNNCVResults.csv')
+    print("Cross validation results written to KNNCVResults.csv")
     return
 
-def random_grid_search(x, y,n_iter = 10,kernel = 'rbf', n_splits_cv = 3):
+def random_grid_search(x, y,n_iter = 10,n_splits_cv = 3):
 
     #Performs a Randomized Grid Search over the parameters defined in 'parameters' variable.
 
-    model = svm.SVR()
+    model = KNeighborsRegressor()
     print("Starting grid search with {} runs".format(n_iter))
-    parameters_all = [{'kernel': 'rbf', 'gamma': [0.1, 0.5, 'auto', 1], 'C': [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 50,100]},  #Parameters for a complete GridSearch
-                  {'kernel': 'linear', 'C': [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 50, 100]},
-                  {'kernel': 'poly', 'degree': [2, 3, 5], 'C': [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 50, 100]}
-                  ]
-    parameters_linear = {'C': [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 50, 100]} # RandomizedSearchCV doesn't allow for lists of dictionaries
-    parameters_rbf = {'kernel': ['rbf'], 'gamma': [0.1, 0.5, 'auto', 1], 'C': [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 50,100]}
-    parameters_poly = {'kernel': ['poly'], 'degree': [2, 3, 5], 'C': [0.001, 0.01, 0.1, 0.5, 1, 5, 10, 50, 100]}
-
-    if kernel == 'rbf':
-        parameters = parameters_rbf
-    elif kernel == 'linear':
-        model = svm.LinearSVR()
-        parameters = parameters_linear
-    elif kernel == 'poly':
-        parameters = parameters_poly
-
-    else:
-        print("Kernel not valid")
-        return
-
+    parameters = {'n_neighbors':[10,11,11,12,20,30,50,60]}
     kf = KFold(n_splits=n_splits_cv, shuffle=True, random_state=1)
     grid_search = RandomizedSearchCV(model, param_distributions=parameters, verbose=3,n_iter=n_iter, cv=kf, scoring=score_rmse)
     grid_search.fit(x, y.values.ravel())
@@ -112,14 +92,12 @@ def random_grid_search(x, y,n_iter = 10,kernel = 'rbf', n_splits_cv = 3):
 
 def main():
     train_x, train_y, test_x = load_data()
-    train_x = train_x[0:len(train_x)//1]
-    train_y = train_y[0:len(train_y) // 1]
-    results = random_grid_search(train_x, train_y, kernel='rbf',n_iter = 10)
+    results = random_grid_search(train_x, train_y,n_iter = 5)
     df_results = pd.DataFrame(results.cv_results_)
     cv = cross_validation(train_x, train_y, results.best_estimator_, n_folds=10)
     cv_tocsv(cv)
-    #print(df_results)
-    df_results.to_csv("output/SVMOptimization.csv")
+    print(df_results)
+    df_results.to_csv("output/KNNOptimization.csv")
     model = results.best_estimator_
     model.fit(train_x,train_y.values.ravel())
     predict_to_csv(model, test_x)
@@ -128,7 +106,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
