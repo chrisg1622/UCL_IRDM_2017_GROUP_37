@@ -11,10 +11,7 @@ import numpy as np
 import Utils as f
 from sklearn.model_selection import KFold
 from sklearn.linear_model import LinearRegression
-
-#RMSE function
-def RMSE(y,y_pred):
-    return mean_squared_error(y, y_pred)**0.5
+import metrics as m
 
 #function to cap predictions on a scale of 1 to 3
 def post_process_preds(y_pred):
@@ -32,11 +29,15 @@ except:
     print('Pre-processed data failed to load, ensure the working directory is correct...')
 
 #dict to store CV results
-CV_results_df = {}
+CV_results_df = pd.DataFrame()
 #create 10-fold CV model
 folds = KFold(n_splits=10, shuffle=True)
-#list to store rmse value at each fold
+#lists to store metric values at each fold
 rmse_scores = []
+exp_var_scores = []
+mean_abs_error_scores = []
+mean_sq_error_scores = []
+r2_scores = []
 #carry out 10-fold CV on the data
 fold = 1
 print('Starting 10-fold cross validation')
@@ -55,21 +56,31 @@ for train_index, test_index in folds.split(X_train):
     y_pred = model.predict(x_test)
     #rescale predictions
     y_pred_pp = post_process_preds(y_pred)
-    #evaluate predictions and append score to rmse scores list
-    rmse_scores.append(RMSE(y_test,y_pred_pp))
+    #evaluate predictions and append score to lists
+    exp_var,mean_abs_err,mean_sq_err,rmse,r2_sc = m.metrics_regress(y_pred_pp, y_test)
+    #append scores to lists
+    rmse_scores.append(rmse)
+    exp_var_scores.append(exp_var)
+    mean_abs_error_scores.append(mean_abs_err)
+    mean_sq_error_scores.append(mean_sq_err)
+    r2_scores.append(r2_sc)
     print('Fold: {}, \t RMSE: {:4f}'.format(fold, rmse_scores[-1]))
-    CV_results_df['rmse_Fold_'+str(fold)] = rmse_scores[-1]
+    for tup in [(rmse_scores,'rmse'),(exp_var_scores,'expl_var'),(mean_abs_error_scores,'mae'),(mean_sq_error_scores,'mse'),(r2_scores,'R2')]:
+        scores, metric = tup   
+        CV_results_df.loc[metric,'Fold '+str(fold)] = scores[-1]
     fold += 1
 
-#compute mean and std deviation of rmse scores
-mean_rmse = np.mean(rmse_scores)
-std_rmse = np.std(rmse_scores)
+#compute mean and standard deviation of each metric, and append these to the results df
+for tup in [(rmse_scores,'rmse'),(exp_var_scores,'expl_var'),(mean_abs_error_scores,'mae'),(mean_sq_error_scores,'mse'),(r2_scores,'R2')]:
+    scores, metric = tup        
+    #compute mean and std deviation of the scores
+    mean = np.mean(scores)
+    std = np.std(scores)
+    print('10 fold CV '+metric+' mean: {:4f}'.format(mean))
+    print('10 fold CV '+metric+' standard deviation: {:4f}'.format(std))
+    CV_results_df.loc[metric,'mean'] = mean
+    CV_results_df.loc[metric,'std'] = std
 
-print('10 fold CV rmse mean: {:4f}'.format(mean_rmse))
-print('10 fold CV rmse standard deviation: {:4f}'.format(std_rmse))
-CV_results_df['rmse_mean'] = mean_rmse
-CV_results_df['rmse_std'] = std_rmse
-CV_results_df = pd.DataFrame(CV_results_df, index = [0])
 CV_results_df.to_csv('output/LinearRegressionCVResults.csv')
 
 print('Training new model on training dataset...')

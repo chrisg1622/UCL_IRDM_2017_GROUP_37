@@ -11,10 +11,7 @@ import numpy as np
 import Utils as f
 from sklearn.model_selection import KFold
 from sklearn.linear_model import LinearRegression
-
-#RMSE function
-def RMSE(y,y_pred):
-    return mean_squared_error(y, y_pred)**0.5
+import metrics as m
 
 #function to cap predictions on a scale of 1 to 3
 def post_process_preds(y_pred):
@@ -58,6 +55,10 @@ for baseline in baselines:
     folds = KFold(n_splits=10, shuffle=True)
     #list to store rmse value at each fold
     rmse_scores = []
+    exp_var_scores = []
+    mean_abs_error_scores = []
+    mean_sq_error_scores = []
+    r2_scores = []
     #carry out 10-fold CV on the data
     fold = 1
     print('Starting 10-fold cross validation')
@@ -76,21 +77,31 @@ for baseline in baselines:
         y_pred = model.predict(x_test)
         #rescale predictions
         y_pred_pp = post_process_preds(y_pred)
-        #evaluate predictions and append score to rmse scores list
-        rmse_scores.append(RMSE(y_test,y_pred_pp))
+        #evaluate predictions and append score to lists
+        exp_var,mean_abs_err,mean_sq_err,rmse,r2_sc = m.metrics_regress(y_pred_pp, y_test)
+        #append scores to lists
+        rmse_scores.append(rmse)
+        exp_var_scores.append(exp_var)
+        mean_abs_error_scores.append(mean_abs_err)
+        mean_sq_error_scores.append(mean_sq_err)
+        r2_scores.append(r2_sc)
         print('Fold: {}, \t RMSE: {:4f}'.format(fold, rmse_scores[-1]))
-        CV_results_dict['rmse_Fold_'+str(fold)] = rmse_scores[-1]
+        #CV_results_dict['rmse_Fold_'+str(fold)] = rmse_scores[-1]
         fold += 1
     
-    #compute mean and std deviation of rmse scores
-    mean_rmse = np.mean(rmse_scores)
-    std_rmse = np.std(rmse_scores)
+    #compute mean and standard deviation of each metric, and append these to the results df
+    for tup in [(rmse_scores,'rmse'),(exp_var_scores,'expl_var'),(mean_abs_error_scores,'mae'),(mean_sq_error_scores,'mse'),(r2_scores,'R2')]:
+        scores, metric = tup        
+        #compute mean and std deviation of the scores
+        mean = np.mean(scores)
+        std = np.std(scores)
+        print('10 fold CV '+metric+' mean: {:4f}'.format(mean))
+        print('10 fold CV '+metric+' standard deviation: {:4f}'.format(std))
+        CV_results_dict[metric+'_mean'] = mean
+        CV_results_dict[metric+'_std'] = std
+        
     
-    print('10 fold CV rmse mean: {:4f}'.format(mean_rmse))
-    print('10 fold CV rmse standard deviation: {:4f}'.format(std_rmse))
-    CV_results_dict['rmse_mean'] = mean_rmse
-    CV_results_dict['rmse_std'] = std_rmse
-    CV_results_df = pd.concat([CV_results_df,pd.DataFrame(CV_results_dict, index=[0])])
+    CV_results_df = pd.concat([CV_results_df,pd.DataFrame(CV_results_dict, index=[baseline])])
     
     print('Training new model on training dataset...')
     #train a new model on the whole training data
@@ -115,25 +126,28 @@ import seaborn as sns
 from pylab import get_cmap
 import matplotlib.pyplot as plt
 
-sns_df = pd.DataFrame()
-for i, row in enumerate(CV_results_df.iterrows()):
-    ID, row = row
-    if '65-feats' in row['Baseline']:
-        if 'not-clean' in row['Baseline']:
-            sns_df.loc['65 Features','Non-Clean Data'] = row['rmse_mean']
+#plot the four baseline scores on a heatmap, for each metric
+for tup in [('rmse',"RdYlGn_r"),('expl_var','RdYlGn'),('mae','RdYlGn_r'),('mse','RdYlGn_r'),('R2','RdYlGn')]:
+    metric, cmap = tup
+    sns_df = pd.DataFrame()
+    for i, row in enumerate(CV_results_df.iterrows()):
+        ID, row = row
+        if '65-feats' in row['Baseline']:
+            if 'not-clean' in row['Baseline']:
+                sns_df.loc['65 Features','Non-Clean Data'] = row[metric+'_mean']
+            else:
+                sns_df.loc['65 Features','Clean Data'] = row[metric+'_mean']
         else:
-            sns_df.loc['65 Features','Clean Data'] = row['rmse_mean']
-    else:
-        if 'not-clean' in row['Baseline']:
-            sns_df.loc['1 Feature','Non-Clean Data'] = row['rmse_mean']
-        else:
-            sns_df.loc['1 Feature','Clean Data'] = row['rmse_mean']
+            if 'not-clean' in row['Baseline']:
+                sns_df.loc['1 Feature','Non-Clean Data'] = row[metric+'_mean']
+            else:
+                sns_df.loc['1 Feature','Clean Data'] = row[metric+'_mean']
 
-plt.figure()
-ax = plt.axes()
-plot = sns.heatmap(data=sns_df, 
-                   annot = True, 
-                   robust = True, 
-                   cmap = get_cmap("RdYlGn_r"))
-ax.set_title('RMSE Baseline Scores')
-plt.savefig('output/LinearRegressionBaselinesCVResultsPlot.png')
+    plt.figure()
+    ax = plt.axes()
+    plot = sns.heatmap(data=sns_df, 
+                       annot = True, 
+                       robust = True, 
+                       cmap = get_cmap(cmap))
+    ax.set_title('Baseline '+ metric +' Scores')
+    plt.savefig('output/LinearRegressionBaselines_'+metric+'Plot.png')
