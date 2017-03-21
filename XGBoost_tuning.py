@@ -31,7 +31,7 @@ optimized_list = []
 optimized_dict = {}
 
 # Utility function to report best scores
-def report(results, n_top=3):
+def report(results, n_top=50):
     for i in range(1, n_top + 1):
         candidates = np.flatnonzero(results['rank_test_score'] == i)
         for candidate in candidates:
