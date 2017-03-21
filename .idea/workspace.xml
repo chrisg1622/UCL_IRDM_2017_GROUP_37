@@ -2,10 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d2bd9965-02ad-4203-9164-e75f5a8ad970" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SVM.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/output/PostProcessingTestResults.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/PostProcessingTest.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/output/PostProcessingTestResults.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegressionBaselines_R2Plot.png" afterPath="$PROJECT_DIR$/output/LinearRegressionBaselines_R2Plot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegressionBaselines_expl_varPlot.png" afterPath="$PROJECT_DIR$/output/LinearRegressionBaselines_expl_varPlot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegressionBaselines_maePlot.png" afterPath="$PROJECT_DIR$/output/LinearRegressionBaselines_maePlot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegressionBaselines_msePlot.png" afterPath="$PROJECT_DIR$/output/LinearRegressionBaselines_msePlot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegressionBaselines_rmsePlot.png" afterPath="$PROJECT_DIR$/output/LinearRegressionBaselines_rmsePlot.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/LinearRegression.py" afterPath="$PROJECT_DIR$/LinearRegression.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/LinearRegressionBaseline.py" afterPath="$PROJECT_DIR$/LinearRegressionBaseline.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NeuralNetwork.py" afterPath="$PROJECT_DIR$/NeuralNetwork.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RandomForest.py" afterPath="$PROJECT_DIR$/RandomForest.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegressionBaselineCVResults.csv" afterPath="$PROJECT_DIR$/output/LinearRegressionBaselineCVResults.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegressionCVResults.csv" afterPath="$PROJECT_DIR$/output/LinearRegressionCVResults.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegressionPredictions.csv" afterPath="$PROJECT_DIR$/output/LinearRegressionPredictions.csv" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -23,8 +33,8 @@
       <file leaf-file-name="SVM.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SVM.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="134">
-              <caret line="39" column="58" lean-forward="false" selection-start-line="39" selection-start-column="58" selection-end-line="39" selection-end-column="58" />
+            <state relative-caret-position="168">
+              <caret line="41" column="31" lean-forward="false" selection-start-line="41" selection-start-column="21" selection-end-line="41" selection-end-column="31" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -69,7 +79,11 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-449">
               <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-              <folding />
+              <folding>
+                <marker date="1490120132456" expanded="true" signature="1271:2391" ph="..." />
+                <marker date="1490120132456" expanded="true" signature="2280:2377" ph="..." />
+                <marker date="1490120132456" expanded="true" signature="2619:2973" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -407,7 +421,11 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-449">
           <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding />
+          <folding>
+            <marker date="1490120132456" expanded="true" signature="1271:2391" ph="..." />
+            <marker date="1490120132456" expanded="true" signature="2280:2377" ph="..." />
+            <marker date="1490120132456" expanded="true" signature="2619:2973" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -423,8 +441,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/SVM.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="134">
-          <caret line="39" column="58" lean-forward="false" selection-start-line="39" selection-start-column="58" selection-end-line="39" selection-end-column="58" />
+        <state relative-caret-position="168">
+          <caret line="41" column="31" lean-forward="false" selection-start-line="41" selection-start-column="21" selection-end-line="41" selection-end-column="31" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>
