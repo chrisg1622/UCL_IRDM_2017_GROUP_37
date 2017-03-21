@@ -125,7 +125,7 @@ for train_index, test_index in folds.split(X_train):
     #Train model for 18 epochs
     print('Training Neural Network for 18 epochs...')
     with tf.Session() as sess:
-        sess.run(tf.initialize_all_variables())
+        sess.run(tf.global_variables_initializer())
         #find number of stories
         n = x_train.shape[0]
 
@@ -192,7 +192,7 @@ for tup in [(rmse_scores,'rmse'),(exp_var_scores,'expl_var'),(mean_abs_error_sco
 #save results to csv
 CV_results_df.to_csv('output/NeuralNetworkCVResults.csv')
 
-
+#%%
 ###################### PREDICTING ON TEST SET #############################
 
 print('Training new model on training dataset...')
@@ -224,7 +224,7 @@ with tf.Session() as sess:
         #postprocess predictions
         Y_train_pred_pp = post_process_preds(Y_train_pred)
         #compute training rmse score
-        train_exp_var,train_mean_abs_err,train_mean_sq_err,train_rmse,train_r2_sc = m.metrics_regress(Y_train_pred_pp, y_train)
+        train_exp_var,train_mean_abs_err,train_mean_sq_err,train_rmse,train_r2_sc = m.metrics_regress(Y_train_pred_pp, Y_train)
         print(' Train rmse:', round(train_rmse,5))
 
     print('Predicting on test dataset...')
