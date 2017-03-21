@@ -2,13 +2,15 @@ from sklearn import svm
 import pickle as p
 import pandas as pd
 from sklearn.model_selection import KFold, RandomizedSearchCV
+from collections import defaultdict
 from sklearn import metrics
 from numpy import sqrt
 import numpy as np
 import metrics as m
 
 def post_process_preds(y_pred):
-    return np.array([max(min(y[0],3.0),1.0) for y in y_pred])
+
+    return np.array([max(min(y,3.0),1.0) for y in y_pred])
 
 def load_data():
     #Loads data and outputs teaining and test sets
@@ -39,15 +41,37 @@ def predict_to_csv(model,x_test):
 
 def cross_validation(x,y,model,n_folds=10): # Not finished
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=1)
+    results = []
+    i=0
     for train_index, test_index in kf.split(x):
-        x_train, x_test = x[train_index], x[test_index]
-        y_train, y_test = y[train_index], y[test_index]
-        model.fit(x_train,y_train)
-        preditcs = model.predict(x_test)
+        i+=1
+        print("Performing {0} fold out of {1}".format(i,n_folds))
+        scores = defaultdict(float)
+        x_train, x_test = x.iloc[train_index], x.iloc[test_index]
+        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+        model.fit(x_train,y_train.values.ravel())
+        predicts = model.predict(x_test)
+        predicts = post_process_preds(predicts)
+        exp_var, mean_abs_err, mean_sq_err, rmse, r2_sc = m.metrics_regress(predicts,y_test)
+        scores['rmse'] = rmse
+        scores['expl_var'] = exp_var
+        scores['mae'] = mean_abs_err
+        scores['mse'] = mean_sq_err
+        scores['R2'] = r2_sc
+        results.append(scores)
+    print("Cross validation finished!")
+    return results
 
-
-
-
+def cv_tocsv(cv):
+    n_folds = len(cv)
+    index_folds = ["Fold {}".format(i) for i in range(1,n_folds+1)]
+    df = pd.DataFrame(cv,index = index_folds)
+    df = df.T
+    df['mean']=df.mean(axis=1)
+    df['sd'] = df.std(axis=1)
+    df.to_csv('output/SVMCVResults.csv')
+    print("Cross validation results written to SVMResults.csv")
+    return
 
 def random_grid_search(x, y,n_iter = 10,kernel = 'rbf', n_splits_cv = 3):
 
@@ -83,11 +107,17 @@ def random_grid_search(x, y,n_iter = 10,kernel = 'rbf', n_splits_cv = 3):
 
 def main():
     train_x, train_y, test_x = load_data()
-    results = random_grid_search(train_x, train_y, kernel='rbf',n_iter = 10)
-    df_results = pd.DataFrame(results)
-
-    print(df_results)
+    train_x = train_x[0:len(train_x)//9]
+    train_y = train_y[0:len(train_y) // 9]
+    results = random_grid_search(train_x, train_y, kernel='rbf',n_iter = 5)
+    df_results = pd.DataFrame(results.cv_results_)
+    cv = cross_validation(train_x, train_y, results.best_estimator_, n_folds=10)
+    cv_tocsv(cv)
+    #print(df_results)
     df_results.to_csv("output/SVMOptimization.csv")
+    model = results.best_estimator_
+    model.fit(train_x,train_y.values.ravel())
+    predict_to_csv(model, test_x)
 
     return
 
