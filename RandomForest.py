@@ -36,7 +36,7 @@ max_depth = 20
 #dict to store CV results
 CV_results_df = pd.DataFrame()
 #create 10-fold CV model
-folds = KFold(n_splits=10, shuffle=True)
+folds = KFold(n_splits=10, shuffle=True, random_state=1)
 #lists to store metric values at each fold
 rmse_scores = []
 exp_var_scores = []

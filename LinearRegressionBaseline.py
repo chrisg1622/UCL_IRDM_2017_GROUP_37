@@ -17,7 +17,6 @@ import metrics as m
 def post_process_preds(y_pred):
     return np.array([max(min(y[0],3.0),1.0) for y in y_pred])
 
-
 #df to store results
 CV_results_df = pd.DataFrame()
 
@@ -52,7 +51,7 @@ for baseline in baselines:
     #dict to store CV results
     CV_results_dict = {'Baseline':baseline}
     #create 10-fold CV model
-    folds = KFold(n_splits=10, shuffle=True)
+    folds = KFold(n_splits=10, shuffle=True, random_state=1)
     #list to store rmse value at each fold
     rmse_scores = []
     exp_var_scores = []
