@@ -58,7 +58,7 @@ k_fold = KFold(3, random_state=1)
 # run randomized search
 n_iter_search = 50
 random_search = RandomizedSearchCV(ridge, param_distributions=params,scoring='neg_mean_squared_error',
-                                   n_iter=n_iter_search)
+                                   cv=k_fold,n_iter=n_iter_search)
 start = time()
 random_search.fit(X, y)
 print("Randomized Search CV took %.2f seconds for %d candidates"
