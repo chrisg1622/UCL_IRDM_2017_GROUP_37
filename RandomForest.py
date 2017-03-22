@@ -103,6 +103,7 @@ predictions = model.predict(X_test)
 #rescale predictions to a 1-3 scale
 predictions = post_process_preds(predictions)
 #add index to predictions
+predictions.columns = ['relevance']
 predictions = pd.DataFrame(predictions, index = X_test.index)
 print('Saving predictions to output folder...')
 #save predictions

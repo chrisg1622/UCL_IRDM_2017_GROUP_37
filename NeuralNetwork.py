@@ -235,7 +235,9 @@ with tf.Session() as sess:
     predictions = sess.run(y_pred, feed_dict = test_feed_dict)
 #rescale predictions to a 1-3 scale
 predictions = post_process_preds(predictions)
+predictions = predictions.apply(lambda x: x[0],axis = 1)
 #add index to predictions
+predictions.columns = ['relevance']
 predictions = pd.DataFrame(predictions, index = X_test.index)
 print('Saving predictions to output folder...')
 #save predictions
