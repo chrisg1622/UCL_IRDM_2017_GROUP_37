@@ -112,8 +112,8 @@ for baseline in baselines:
     #rescale predictions to a 1-3 scale
     predictions = post_process_preds(predictions)
     #add index to predictions
-    predictions.columns = ['relevance']
     predictions = pd.DataFrame(predictions, index = X_test.index)
+    predictions.columns = ['relevance']
     print('Saving predictions to output folder...')
     #save predictions
     predictions.to_csv('output/LinearRegression'+'('+baseline+')'+'Predictions.csv')

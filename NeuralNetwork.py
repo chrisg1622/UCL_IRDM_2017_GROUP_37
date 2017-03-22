@@ -237,8 +237,8 @@ with tf.Session() as sess:
 predictions = post_process_preds(predictions)
 predictions = predictions.apply(lambda x: x[0],axis = 1)
 #add index to predictions
-predictions.columns = ['relevance']
 predictions = pd.DataFrame(predictions, index = X_test.index)
+predictions.columns = ['relevance']
 print('Saving predictions to output folder...')
 #save predictions
 predictions.to_csv('output/NeuralNetworkPredictions.csv')

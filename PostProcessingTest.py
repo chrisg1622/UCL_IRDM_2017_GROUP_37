@@ -135,3 +135,16 @@ plot = sns.factorplot(x = 'Metric',
                       size=6, 
                       color='Green')
 plot.savefig('output/PostProcessingTestResults.png')
+
+plot = sns.factorplot(x = 'Metric', 
+                      y="10-fold mean", 
+                      data=CV_results_df, 
+                      hue = 'Post-processed',
+                      kind="bar", 
+                      size=6, 
+                      color='Green')
+plot.savefig('output/PostProcessingTestResults2.png')
+
+
+
+
