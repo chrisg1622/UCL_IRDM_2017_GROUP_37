@@ -98,12 +98,6 @@ output.to_csv('output/ElasticNetPredictions.csv')
 get_ipython().system(u'jupyter nbconvert --to=python ElasticNet.ipynb')
 
 
-# In[4]:
-
-ElasticNet()
-
-
-# In[ ]:
 
 
 
