@@ -63,7 +63,7 @@ for i,model in enumerate(models):
         ensemble_predictions.relevance = ensemble_predictions.relevance + predictions[model].relevance.apply(lambda x: x * weight)
 
 ensemble_predictions.relevance = ensemble_predictions.relevance.apply(lambda x: post_process_preds(x))
-    
+ensemble_predictions.to_csv('output/EnsemblePredictions.csv')
 #%%
 #check model predictions ( min & max )
 for model in models:
