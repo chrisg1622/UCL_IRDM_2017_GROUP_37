@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d2bd9965-02ad-4203-9164-e75f5a8ad970" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/KNN.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/output/KNNCVResults.csv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/output/KNNOptimization.csv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/output/KNNPredictions.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SVM.py" afterPath="$PROJECT_DIR$/SVM.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/KNNPredictions.csv" afterPath="$PROJECT_DIR$/output/KNNPredictions.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/SVMCVResults.csv" afterPath="$PROJECT_DIR$/output/SVMCVResults.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/SVMOptimization.csv" afterPath="$PROJECT_DIR$/output/SVMOptimization.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/SVMPredictions.csv" afterPath="$PROJECT_DIR$/output/SVMPredictions.csv" />
@@ -40,8 +36,8 @@
       <file leaf-file-name="SVM.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SVM.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="116" column="75" lean-forward="false" selection-start-line="116" selection-start-column="75" selection-end-line="116" selection-end-column="75" />
+            <state relative-caret-position="33">
+              <caret line="117" column="76" lean-forward="false" selection-start-line="117" selection-start-column="76" selection-end-line="117" selection-end-column="76" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -61,22 +57,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="XGBoost_tuning.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/XGBoost_tuning.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="401">
-              <caret line="81" column="0" lean-forward="false" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="XGBoost.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/XGBoost.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="30" column="0" lean-forward="false" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="492">
+              <caret line="50" column="0" lean-forward="false" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
+              <folding>
+                <marker date="1490182273942" expanded="true" signature="2821:2847" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -384,9 +372,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/XGBoost.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="30" column="0" lean-forward="false" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="492">
+          <caret line="50" column="0" lean-forward="false" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
+          <folding>
+            <marker date="1490182273942" expanded="true" signature="2821:2847" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -420,8 +410,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/SVM.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="116" column="75" lean-forward="false" selection-start-line="116" selection-start-column="75" selection-end-line="116" selection-end-column="75" />
+        <state relative-caret-position="33">
+          <caret line="117" column="76" lean-forward="false" selection-start-line="117" selection-start-column="76" selection-end-line="117" selection-end-column="76" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>
