@@ -8,10 +8,30 @@ from sklearn import metrics
 from numpy import sqrt
 import numpy as np
 import metrics as m
+from bisect import bisect_left
+
+
+def takeClosest(myList, myNumber):
+    """
+    Assumes myList is sorted. Returns closest value to myNumber.
+
+    If two numbers are equally close, return the smallest number.
+    """
+    pos = bisect_left(myList, myNumber)
+    if pos == 0:
+        return myList[0]
+    if pos == len(myList):
+        return myList[-1]
+    before = myList[pos - 1]
+    after = myList[pos]
+    if after - myNumber < myNumber - before:
+        return after
+    else:
+        return before
 
 def post_process_preds(y_pred):
 
-    return np.array([max(min(y,3.0),1.0) for y in y_pred])
+    return np.array([takeClosest([1,1.33,1.67,2,2.33,2.67,3],y) for y in y_pred])
 
 def load_data():
     #Loads data and outputs teaining and test sets
