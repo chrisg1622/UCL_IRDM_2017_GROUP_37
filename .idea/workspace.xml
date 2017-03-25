@@ -2,13 +2,41 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d2bd9965-02ad-4203-9164-e75f5a8ad970" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/output/NeuralNetworkPredictions.csv" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/UCL_IRDM_2017_GROUP_37.iml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/closest.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/data_exploration.R" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/py" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/KNN.py" afterPath="$PROJECT_DIR$/KNN.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/LinearRegression.py" afterPath="$PROJECT_DIR$/LinearRegression.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/LinearRegressionBaseline.py" afterPath="$PROJECT_DIR$/LinearRegressionBaseline.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NeuralNetwork.py" afterPath="$PROJECT_DIR$/NeuralNetwork.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PostProcessingTest.py" afterPath="$PROJECT_DIR$/PostProcessingTest.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RandomForest.py" afterPath="$PROJECT_DIR$/RandomForest.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SVM.py" afterPath="$PROJECT_DIR$/SVM.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/ElasticNetCVResults.csv" afterPath="$PROJECT_DIR$/output/ElasticNetCVResults.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/ElasticNetPredictions.csv" afterPath="$PROJECT_DIR$/output/ElasticNetPredictions.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/KNNCVResults.csv" afterPath="$PROJECT_DIR$/output/KNNCVResults.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/KNNOptimization.csv" afterPath="$PROJECT_DIR$/output/KNNOptimization.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/KNNPredictions.csv" afterPath="$PROJECT_DIR$/output/KNNPredictions.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LassoCVResults.csv" afterPath="$PROJECT_DIR$/output/LassoCVResults.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LassoPredictions.csv" afterPath="$PROJECT_DIR$/output/LassoPredictions.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegression(clean;1-feat)Predictions.csv" afterPath="$PROJECT_DIR$/output/LinearRegression(clean;1-feat)Predictions.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegression(clean;65-feats)Predictions.csv" afterPath="$PROJECT_DIR$/output/LinearRegression(clean;65-feats)Predictions.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegression(not-clean;1-feat)Predictions.csv" afterPath="$PROJECT_DIR$/output/LinearRegression(not-clean;1-feat)Predictions.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegression(not-clean;65-feats)Predictions.csv" afterPath="$PROJECT_DIR$/output/LinearRegression(not-clean;65-feats)Predictions.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/LinearRegressionPredictions.csv" afterPath="$PROJECT_DIR$/output/LinearRegressionPredictions.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/RandomForestPredictions.csv" afterPath="$PROJECT_DIR$/output/RandomForestPredictions.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/RidgeCVResults.csv" afterPath="$PROJECT_DIR$/output/RidgeCVResults.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/RidgePredictions.csv" afterPath="$PROJECT_DIR$/output/RidgePredictions.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/SVMCVResults.csv" afterPath="$PROJECT_DIR$/output/SVMCVResults.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/SVMOptimization.csv" afterPath="$PROJECT_DIR$/output/SVMOptimization.csv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/output/SVMPredictions.csv" afterPath="$PROJECT_DIR$/output/SVMPredictions.csv" />
     </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,7 +48,7 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="metrics.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/metrics.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -36,8 +64,8 @@
       <file leaf-file-name="SVM.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SVM.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="33">
-              <caret line="117" column="76" lean-forward="false" selection-start-line="117" selection-start-column="76" selection-end-line="117" selection-end-column="76" />
+            <state relative-caret-position="217">
+              <caret line="47" column="0" lean-forward="false" selection-start-line="47" selection-start-column="0" selection-end-line="69" selection-end-column="18" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -48,8 +76,8 @@
       <file leaf-file-name="KNN.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/KNN.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="93" column="42" lean-forward="false" selection-start-line="93" selection-start-column="42" selection-end-line="93" selection-end-column="42" />
+            <state relative-caret-position="-1401">
+              <caret line="10" column="30" lean-forward="true" selection-start-line="10" selection-start-column="30" selection-end-line="10" selection-end-column="30" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -57,10 +85,20 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="closest.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/closest.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="17" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="XGBoost.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/XGBoost.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="492">
+            <state relative-caret-position="223">
               <caret line="50" column="0" lean-forward="false" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
               <folding>
                 <marker date="1490182273942" expanded="true" signature="2821:2847" ph="..." />
@@ -69,10 +107,20 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="XGBoost_Optimization.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/XGBoost_Optimization.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="344">
+              <caret line="60" column="46" lean-forward="true" selection-start-line="60" selection-start-column="46" selection-end-line="60" selection-end-column="46" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="LinearRegression.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/LinearRegression.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1084">
+            <state relative-caret-position="119">
               <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
               <folding />
             </state>
@@ -88,12 +136,18 @@
       </list>
     </option>
   </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>rave</find>
+    </findStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/closest.py" />
         <option value="$PROJECT_DIR$/KNN.py" />
         <option value="$PROJECT_DIR$/SVM.py" />
       </list>
@@ -121,7 +175,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -150,6 +203,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -322,6 +376,13 @@
     <option name="remove_strategy" value="false" />
   </component>
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d2bd9965-02ad-4203-9164-e75f5a8ad970" name="Default" comment="" />
+      <created>1490281280065</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1490281280065</updated>
+    </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -333,19 +394,22 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32729805" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32729805" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32729805" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -354,28 +418,92 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/sklearn/model_selection/_search.py">
+    <entry file="file://$PROJECT_DIR$/metrics.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="1156" column="8" lean-forward="false" selection-start-line="1156" selection-start-column="8" selection-end-line="1156" selection-end-column="8" />
-          <folding />
+        <state relative-caret-position="238">
+          <caret line="15" column="54" lean-forward="true" selection-start-line="15" selection-start-column="11" selection-end-line="15" selection-end-column="54" />
+          <folding>
+            <element signature="e#0#27#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/XGBoost_tuning.py">
+    <entry file="file://$PROJECT_DIR$/SVM.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="401">
-          <caret line="81" column="0" lean-forward="false" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/KNN.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="30" lean-forward="true" selection-start-line="10" selection-start-column="30" selection-end-line="10" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/closest.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="17" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/XGBoost.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="492">
+        <state relative-caret-position="714">
           <caret line="50" column="0" lean-forward="false" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
           <folding>
             <marker date="1490182273942" expanded="true" signature="2821:2847" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LinearRegression.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/sklearn/model_selection/_search.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="1156" column="8" lean-forward="false" selection-start-line="1156" selection-start-column="8" selection-end-line="1156" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/XGBoost_tuning.py" />
+    <entry file="file://$PROJECT_DIR$/LinearRegression.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/closest.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="17" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/KNN.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1401">
+          <caret line="10" column="30" lean-forward="true" selection-start-line="10" selection-start-column="30" selection-end-line="10" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -390,28 +518,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/LinearRegression.py">
+    <entry file="file://$PROJECT_DIR$/XGBoost.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1084">
-          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="223">
+          <caret line="50" column="0" lean-forward="false" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
+          <folding>
+            <marker date="1490182273942" expanded="true" signature="2821:2847" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/KNN.py">
+    <entry file="file://$PROJECT_DIR$/XGBoost_Optimization.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="93" column="42" lean-forward="false" selection-start-line="93" selection-start-column="42" selection-end-line="93" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="344">
+          <caret line="60" column="46" lean-forward="true" selection-start-line="60" selection-start-column="46" selection-end-line="60" selection-end-column="46" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/SVM.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="33">
-          <caret line="117" column="76" lean-forward="false" selection-start-line="117" selection-start-column="76" selection-end-line="117" selection-end-column="76" />
+        <state relative-caret-position="217">
+          <caret line="47" column="0" lean-forward="false" selection-start-line="47" selection-start-column="0" selection-end-line="69" selection-end-column="18" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
           </folding>

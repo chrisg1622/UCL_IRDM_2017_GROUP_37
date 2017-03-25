@@ -1,4 +1,3 @@
-from bisect import bisect_left
 
 def takeClosest(myList, myNumber):
     """

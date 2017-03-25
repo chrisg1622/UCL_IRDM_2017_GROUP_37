@@ -34,8 +34,7 @@ wordcloud(words = d$word, freq = d$freq, min.freq = 1,
           max.words=200, random.order=FALSE, rot.per=0.35, 
           colors=brewer.pal(8, "Dark2"))
 
-library(cluster)   
-d <- dist(t(dtmss), method="euclidian")   
-fit <- hclust(d=d, method="ward")   
-fit   
-plot(fit, hang=-1)  
+
+
+train_descr_att$len_title <- nchar(as.character(train_descr_att$product_title))
+hist(train_descr_att$len_title)
