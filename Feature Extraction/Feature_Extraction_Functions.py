@@ -65,6 +65,21 @@ def get_prod_descr_list(product_uid, get_text = False):
         return prod_descr_str
     return prod_descr_str.split()
 
+#retrieve the product's brand name
+def get_product_brand_name(attributes, product_uid):
+    try:
+        return  attributes[attributes.product_uid==product_uid]['value'].values[0]
+    except:
+        return ''
+
+#adds the product brand name as an extra column in the dataframe
+def add_brand_name_to_df(df, attributes):
+    attributes_filtered = attributes[attributes.name.apply(lambda x: str(x).lower()) == 'mfg brand name']
+    brand_names_ =  df.product_uid.apply(lambda x: get_product_brand_name(attributes_filtered,x))
+    brand_names = pd.DataFrame(brand_names_)
+    brand_names.columns = ['brand_name']
+    return pd.concat([df,brand_names],axis=1)
+
 #function to retrieve the set of all search term words, for use in idf calculation
 def get_search_terms_set(train, test):
     search_terms = []
@@ -112,10 +127,12 @@ def create_product_dataframe(train, test, attributes, product_descriptions):
     num_instances_df = len(dataframe)
     #go through test data and add product_titles to the dataframe
     print('Adding product descriptions, attribute names and attribute values to product dataframe...')
+    attributes2 = attributes[attributes['name'].apply(lambda x: str(x).lower()) == 'mfg brand name']    
     for i,product_uid in enumerate(dataframe.index):
         dataframe.loc[product_uid,'prod_descr'] = get_prod_descr_list(product_uid, get_text=True)
         dataframe.loc[product_uid,'attr_names'] = get_attr_names_list(product_uid, get_text=True)
         dataframe.loc[product_uid,'attr_values'] = get_attr_value_list(product_uid, get_text=True)
+        dataframe.loc[product_uid,'brand_name'] = get_product_brand_name(attributes2, product_uid)
         if (i+1) % 10000 == 0: print('Processed {} of {} instances...'.format(i+1,num_instances_df))
     return dataframe
 
@@ -153,7 +170,7 @@ def load_idf_default_dict(search_terms, product_dataframe, query_set='search_ter
         save_obj(idf_dict,'input_clean/idf_dict_'+query_set+'-'+doc_set)
     return idf_dict
 
-#function to take as input the product_dataframe and either train or test dataframes, and append the 
+#function to take as input_clean the product_dataframe and either train or test dataframes, and append the 
 #product info (description, attr_names and attr_values) to the dataframe
 def add_product_info_to_data(dataframe, product_dataframe):
     num_instances = len(dataframe)
@@ -222,7 +239,7 @@ def load_terms(product_df, doc_set):
     return terms
 
 #function to load (or create) the datasets which include all product info
-def load_train_and_test_data_with_product_info(train_original, test_original, product_dataframe):
+def load_train_and_test_data_with_product_info(train_original, test_original, product_dataframe, attributes):
     try:
         print('Loading the train and test dataframes which include all product information...')
         train = load_obj('input_clean/train_all')
@@ -230,8 +247,10 @@ def load_train_and_test_data_with_product_info(train_original, test_original, pr
     except:
         print('Failed to load the train and test dataframes which include all product information...')
         print('Creating the train and test dataframes which include all product information......')
-        train = add_product_info_to_data(train_original, product_dataframe)
-        test = add_product_info_to_data(test_original, product_dataframe)
+        train_ = add_product_info_to_data(train_original, product_dataframe)
+        test_ = add_product_info_to_data(test_original, product_dataframe)
+        train = add_brand_name_to_df(train_, attributes)
+        test = add_brand_name_to_df(test_, attributes)
         print('Saving product dataframe to file...')
         save_obj(train,'input_clean/train_all')
         save_obj(test,'input_clean/test_all')

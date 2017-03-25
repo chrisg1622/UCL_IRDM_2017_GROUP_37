@@ -19,14 +19,17 @@ product_dataframe = f.load_product_dataframe(train_original,test_original,attrib
     
 #I have added all the product info into the train and test data for feature calculation efficiency
 #try to load this 'train_all' and 'test_all' data, or if it has not yet been made, make it and save it.
-train, test = f.load_train_and_test_data_with_product_info(train_original, test_original, product_dataframe)
-    
+train, test = f.load_train_and_test_data_with_product_info(train_original, test_original, product_dataframe, attributes)
+train = train.fillna('')
+test = test.fillna('')
+
 #try to load search terms
 search_terms = f.load_search_terms(train,test)
 product_title_terms = f.load_terms(product_dataframe,'product_title')
 prod_descr_terms = f.load_terms(product_dataframe,'prod_descr')
 attr_names_terms = f.load_terms(product_dataframe,'attr_names')
 attr_values_terms = f.load_terms(product_dataframe,'attr_values')
+brand_name_terms = f.load_terms(product_dataframe,'brand_name')
     
 #try to load the dictionary containing average document lengths, for BM25 calculations
 doc_len_dict = f.load_dict_of_avg_doc_lengths(product_dataframe, train, test)
@@ -44,6 +47,7 @@ idf_dicts['product_title-search_term'] = f.load_idf_default_dict(product_title_t
 idf_dicts['prod_descr-search_term'] = f.load_idf_default_dict(prod_descr_terms,search_term_df,'prod_descr','search_term')
 idf_dicts['attr_names-search_term'] = f.load_idf_default_dict(attr_names_terms,search_term_df,'attr_names','search_term')
 idf_dicts['attr_values-search_term'] = f.load_idf_default_dict(attr_values_terms,search_term_df,'attr_values','search_term')
+idf_dicts['brand_name-search_term'] = f.load_idf_default_dict(brand_name_terms,search_term_df,'attr_values','search_term')
 
 
 #have a look at data for the first product uid
@@ -165,6 +169,11 @@ features = [
             ('_bm25_','search_term', 'prod_descr','avg', 1.5, 0.75),
             ('_bm25_','search_term', 'attr_names','avg', 1.5, 0.75),
             ('_bm25_','search_term', 'attr_values','avg', 1.5, 0.75),
+
+            #adding brand name tf
+            ('_tf_','search_term','brand_name','natural'),
+            ('_tf_idf_','search_term','brand_name','natural','smooth','sum'),
+            ('_bm25_','search_term','brand_name', 'sum', 1.5, 0.75),
             ]
 
 f.save_obj(Y_train,'input_clean/Y_train')
@@ -172,20 +181,48 @@ f.save_obj(Y_train,'input_clean/Y_train')
 for feature in features:
     X_train = f.add_feature(X_train, train, product_dataframe, feature, 0.5, idf_dicts, 124428, doc_len_dict, data = 'train')
     X_test = f.add_feature(X_test, test, product_dataframe, feature, 0.5, idf_dicts,124428, doc_len_dict, data = 'test')
+    
 
 #save the pre-processed data
 print('Saving data...')
 f.save_obj(X_train,'input_clean/X_train')
 f.save_obj(X_test,'input_clean/X_test')
 
-        
 #%%
 
 #split the data by relevance value and view the difference in means for each feature
+#retrieve feature importance scores, calculated by 
+scores = []
 for col in X_train.columns:
+    less_rel_score = X_train.loc[Y_train['relevance']<2.0][col].describe()['mean']
+    more_rel_score = X_train.loc[Y_train['relevance']>=2.0][col].describe()['mean']
     print('Feature: {} \n Mean for relevance > 2.5: {} \n Mean for relevance < 1.5: {}'.format(col,
-          X_train.loc[Y_train['relevance']>2.5][col].describe()['mean'],
-          X_train.loc[Y_train['relevance']<1.5][col].describe()['mean']))
-          
-        
+          more_rel_score,
+          less_rel_score))
+    scores.append(abs(more_rel_score - less_rel_score)/min(less_rel_score,more_rel_score))
+    
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+#number the attributes from 1 to 68, store these as k,v pairs
+feature_importance_scores = [(i+1,scores[i]) for i in range(len(scores))]
+#sort the attributes by importance, descending
+sorted_feats = sorted(feature_importance_scores, key = lambda x:x[1], reverse=True)
+#retrieves sorted keys and values
+sorted_keys = [feat[0] for feat in sorted_feats]
+sorted_vals = [feat[1] for feat in sorted_feats]
+sorted_names = [X_train.columns[i-1] for i in sorted_keys]
+
+
+fig, (ax1, ax2) = plt.subplots(1,2,sharey=True)
+#plot 10 most important features
+sns.barplot(x = sorted_keys[:10],y = sorted_vals[:10], order = sorted_keys[:10], ax=ax1)
+#plot 10 least important features
+sns.barplot(x = sorted_keys[-10:],y = sorted_vals[-10:], order = sorted_keys[-10:], ax=ax2)
+ax1.set_title('10 Most Important Features')
+ax2.set_title('10 Least Important Features')
+fig.savefig('output/FeatureImportance_UsingRelativeDifference')
+
+feature_importance = pd.DataFrame({'Feature':sorted_names,'% Importance':sorted_vals})
+feature_importance.to_csv('output/FeatureImportance_UsingRelativeDifference.csv')
         
