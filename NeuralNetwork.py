@@ -57,7 +57,7 @@ optimizer = optimizers['Adam']
 x = tf.placeholder(tf.float64, shape = (None, N_feats))
 y = tf.placeholder(tf.float64, shape = (None, 1))
 
-with tf.variable_scope("Scope") as varscope:
+with tf.variable_scope("Scope1") as varscope:
     #hidden layers
     hidden = tf.contrib.layers.repeat(x, num_hidden_layers, tf.contrib.layers.fully_connected, 
                                       num_outputs= int(hidden_layer_size), 
@@ -234,7 +234,7 @@ with tf.Session() as sess:
     #predict on training data
     predictions = sess.run(y_pred, feed_dict = test_feed_dict)
 #rescale predictions to a 1-3 scale
-predictions = post_process_preds(predictions)
+predictions = pd.DataFrame(post_process_preds(predictions))
 predictions = predictions.apply(lambda x: x[0],axis = 1)
 #add index to predictions
 predictions = pd.DataFrame(predictions, index = X_test.index)

@@ -124,13 +124,14 @@ sorted_keys = [feat[0] for feat in sorted_feats]
 sorted_vals = [feat[1] for feat in sorted_feats]
 sorted_names = [X_train.columns[i-1] for i in sorted_keys]
 
-f, (ax1, ax2) = plt.subplots(1,2,sharey=True)
+fig, (ax1, ax2) = plt.subplots(1,2,sharey=True)
 #plot 10 most important features
 sns.barplot(x = sorted_keys[:10],y = sorted_vals[:10], order = sorted_keys[:10], ax=ax1)
 #plot 10 least important features
 sns.barplot(x = sorted_keys[-10:],y = sorted_vals[-10:], order = sorted_keys[-10:], ax=ax2)
 ax1.set_title('10 Most Important Features')
 ax2.set_title('10 Least Important Features')
+fig.savefig('output/RandomForestFeatureImportance')
 
 feature_importance = pd.DataFrame({'Feature':sorted_names,'% Importance':sorted_vals})
 #feature_importance['% Importance'] = feature_importance['% Importance'].apply(lambda x: x*100)
