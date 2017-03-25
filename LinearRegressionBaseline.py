@@ -22,10 +22,10 @@ CV_results_df = pd.DataFrame()
 
 """ Compare 3 baselines for prediction:
 1. Using Non-cleaned data and 1 feature (natural tf on product_title, search_term)
-2. Using Non-cleaned data and 65 features (to compare the effect of adding features)
+2. Using Non-cleaned data and 68 features (to compare the effect of adding features)
 3. Using Cleaned data and 1 feature (to compare the effect of cleaning data)
-4. Using Cleaned data and 65 features (to compare the combined effect of adding features and cleaning data)"""
-baselines = ['not-clean;1-feat', 'not-clean;65-feats', 'clean;1-feat', 'clean;65-feats']
+4. Using Cleaned data and 68 features (to compare the combined effect of adding features and cleaning data)"""
+baselines = ['not-clean;1-feat', 'not-clean;68-feats', 'clean;1-feat', 'clean;68-feats']
 for baseline in baselines:
     print('\n Starting script for {}'.format(baseline))    
     #specify the directory depending on the baseline we're running
@@ -132,11 +132,11 @@ for tup in [('rmse',"RdYlGn_r"),('expl_var','RdYlGn'),('mae','RdYlGn_r'),('mse',
     sns_df = pd.DataFrame()
     for i, row in enumerate(CV_results_df.iterrows()):
         ID, row = row
-        if '65-feats' in row['Baseline']:
+        if '68-feats' in row['Baseline']:
             if 'not-clean' in row['Baseline']:
-                sns_df.loc['65 Features','Non-Clean Data'] = row[metric+'_mean']
+                sns_df.loc['68 Features','Non-Clean Data'] = row[metric+'_mean']
             else:
-                sns_df.loc['65 Features','Clean Data'] = row[metric+'_mean']
+                sns_df.loc['68 Features','Clean Data'] = row[metric+'_mean']
         else:
             if 'not-clean' in row['Baseline']:
                 sns_df.loc['1 Feature','Non-Clean Data'] = row[metric+'_mean']
