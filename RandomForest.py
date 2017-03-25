@@ -104,6 +104,7 @@ predictions = model.predict(X_test)
 predictions = post_process_preds(predictions)
 #add index to predictions
 predictions = pd.DataFrame(predictions, index = X_test.index)
+predictions.columns = ['relevance']
 print('Saving predictions to output folder...')
 #save predictions
 predictions.to_csv('output/RandomForestPredictions.csv')

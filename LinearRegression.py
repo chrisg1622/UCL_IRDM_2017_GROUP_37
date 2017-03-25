@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Mar  7 21:59:22 2017
-
 @author: Chris
 """
 
@@ -94,6 +93,7 @@ predictions = model.predict(X_test)
 predictions = post_process_preds(predictions)
 #add index to predictions
 predictions = pd.DataFrame(predictions, index = X_test.index)
+predictions.columns = ['relevance']
 print('Saving predictions to output folder...')
 #save predictions
 predictions.to_csv('output/LinearRegressionPredictions.csv')
