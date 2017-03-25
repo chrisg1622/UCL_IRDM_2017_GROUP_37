@@ -108,3 +108,39 @@ predictions.columns = ['relevance']
 print('Saving predictions to output folder...')
 #save predictions
 predictions.to_csv('output/RandomForestPredictions.csv')
+
+#%%
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+#retrieve feature importance scores
+scores = model.feature_importances_
+#number the attributes from 1 to 65, store these as k,v pairs
+feature_importance_scores = [(i+1,scores[i]) for i in range(len(scores))]
+#sort the attributes by importance, descending
+sorted_feats = sorted(feature_importance_scores, key = lambda x:x[1], reverse=True)
+#retrieves sorted keys and values
+sorted_keys = [feat[0] for feat in sorted_feats]
+sorted_vals = [feat[1] for feat in sorted_feats]
+sorted_names = [X_train.columns[i-1] for i in sorted_keys]
+
+f, (ax1, ax2) = plt.subplots(1,2,sharey=True)
+#plot 10 most important features
+sns.barplot(x = sorted_keys[:10],y = sorted_vals[:10], order = sorted_keys[:10], ax=ax1)
+#plot 10 least important features
+sns.barplot(x = sorted_keys[-10:],y = sorted_vals[-10:], order = sorted_keys[-10:], ax=ax2)
+ax1.set_title('10 Most Important Features')
+ax2.set_title('10 Least Important Features')
+
+feature_importance = pd.DataFrame({'Feature':sorted_names,'% Importance':sorted_vals})
+#feature_importance['% Importance'] = feature_importance['% Importance'].apply(lambda x: x*100)
+
+#==============================================================================
+# print('---- 10 Most Important Features ----')
+# for i,feature in enumerate(feature_importance.itertuples()):
+#     ID, val, feat = feature
+#     if i < 10:
+#         print('#{} \t Feature: {} \t % Importance: {}'.format(ID+1,feat,val))
+#==============================================================================
+
+feature_importance.to_csv('output/RandomForestFeatureImportance.csv')
