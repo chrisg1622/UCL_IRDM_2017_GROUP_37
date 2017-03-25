@@ -31,7 +31,7 @@ predictions = {}
 #read in the predictions and CV rmse means for each model
 print('Attempting to load CV Results...')
 for model in models:
-    print('Reading {} CV Results...'.format(model))
+    print(' Reading {} CV Results...'.format(model))
     CVResults_df = pd.read_csv(str('output/'+model+'CVResults.csv'),index_col='Unnamed: 0')
     preds_df = pd.read_csv(str('output/'+model+'Predictions.csv'),index_col='id')
     preds_df.columns = ['relevance']
@@ -67,6 +67,6 @@ ensemble_predictions.to_csv('output/EnsemblePredictions.csv')
 #%%
 #check model predictions ( min & max )
 for model in models:
-    print('Model: {} \t Min: {} \t Max: {}'.format(model,min(predictions[model]['relevance']),max(predictions[model]['relevance'])))
+    print('Model: {} \n Min: {:f} \t Max: {:f}'.format(model,min(predictions[model]['relevance']),max(predictions[model]['relevance'])))
 
-print('Model: Ensemble \t Min: {} \t Max: {}'.format(min(ensemble_predictions['relevance']),max(ensemble_predictions['relevance'])))
+print('Model: Ensemble \n Min: {:f} \t Max: {:f}'.format(min(ensemble_predictions['relevance']),max(ensemble_predictions['relevance'])))
