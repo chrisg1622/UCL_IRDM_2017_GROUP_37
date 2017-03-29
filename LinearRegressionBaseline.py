@@ -125,9 +125,16 @@ CV_results_df.to_csv('output/LinearRegressionBaselineCVResults.csv',index=False)
 import seaborn as sns
 from pylab import get_cmap
 import matplotlib.pyplot as plt
+import matplotlib
 
+matplotlib.rcParams['xtick.labelsize'] = 15
+matplotlib.rcParams['ytick.labelsize'] = 15
+matplotlib.rcParams['axes.titlesize'] = 15
+
+axes = {}
+fig, (axes['ax1'], axes['ax2'], axes['ax3'], axes['ax4'], axes['ax5']) = plt.subplots(1,5, sharey=True, sharex=True,figsize=(15,3))
 #plot the four baseline scores on a heatmap, for each metric
-for tup in [('rmse',"RdYlGn_r"),('expl_var','RdYlGn'),('mae','RdYlGn_r'),('mse','RdYlGn_r'),('R2','RdYlGn')]:
+for num,tup in enumerate([('rmse',"RdYlGn_r"),('expl_var','RdYlGn'),('mae','RdYlGn_r'),('mse','RdYlGn_r'),('R2','RdYlGn')]):
     metric, cmap = tup
     sns_df = pd.DataFrame()
     for i, row in enumerate(CV_results_df.iterrows()):
@@ -142,12 +149,28 @@ for tup in [('rmse',"RdYlGn_r"),('expl_var','RdYlGn'),('mae','RdYlGn_r'),('mse',
                 sns_df.loc['1 Feature','Non-Clean Data'] = row[metric+'_mean']
             else:
                 sns_df.loc['1 Feature','Clean Data'] = row[metric+'_mean']
-
-    plt.figure()
+    
+    #plot results on separate graphs for each metric
+    plt.figure(figsize=(6,4))
     ax = plt.axes()
     plot = sns.heatmap(data=sns_df, 
                        annot = True, 
                        robust = True, 
-                       cmap = get_cmap(cmap))
+                       cmap = get_cmap(cmap),
+                       annot_kws={"size":15})
     ax.set_title('Baseline '+ metric +' Scores')
     plt.savefig('output/LinearRegressionBaselines_'+metric+'Plot.png')
+    
+    #plot all plots on one graph
+    sns.heatmap(data=sns_df, 
+                annot = True, 
+                robust = True, 
+                cmap = get_cmap(cmap),
+                cbar=False,
+                square=True,
+                annot_kws={"size":15},
+                xticklabels = ['Not-Clean','Clean'],
+                yticklabels = ['1 Feat','68 Feats'],
+                ax = axes['ax'+str(num+1)])
+    axes['ax'+str(num+1)].set_title(metric)
+    fig.savefig('output/LinearRegressionBaselines_PlotAllMetrics.png')
