@@ -115,7 +115,7 @@ for i,tup in enumerate([(rmse_scores,rmse_scores_pp,'rmse'),
     CV_results_df2.loc[i, '10-Fold STD Not Post-Processed'] = std
     CV_results_df2.loc[i, '10-Fold Mean Post-Processed'] = mean_pp
     CV_results_df2.loc[i, '10-Fold STD Post-Processed'] = std_pp
-    CV_results_df2.loc[i, '10-Fold Mean - Change After Post-Processing Predictions'] = mean_pp - mean
+    CV_results_df2.loc[i, 'Change in 10-Fold Mean'] = mean_pp - mean
 
 CV_results_df2.to_csv('output/PostProcessingTestResults.csv')
 
@@ -126,13 +126,22 @@ CV_results_df2.to_csv('output/PostProcessingTestResults.csv')
 #plot results and save figure
 import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib
+
+matplotlib.rcParams['xtick.labelsize'] = 15
+matplotlib.rcParams['ytick.labelsize'] = 15
+matplotlib.rcParams['axes.titlesize'] = 15
+matplotlib.rcParams['legend.fontsize'] = 15
+matplotlib.rcParams['font.size'] = 15
+matplotlib.rcParams['axes.labelsize'] = 17
 
 
 plot = sns.factorplot(x = 'Metric', 
-                      y="10-Fold Mean - Change After Post-Processing Predictions", 
+                      y='Change in 10-Fold Mean', 
                       data=CV_results_df2, 
                       kind="bar", 
-                      size=6, 
+                      size=4,
+                      aspect=2,
                       color='Green')
 plot.savefig('output/PostProcessingTestResults.png')
 
@@ -141,7 +150,8 @@ plot = sns.factorplot(x = 'Metric',
                       data=CV_results_df, 
                       hue = 'Post-processed',
                       kind="bar", 
-                      size=6, 
+                      size=4, 
+                      aspect=2,
                       color='Green')
 plot.savefig('output/PostProcessingTestResults2.png')
 
