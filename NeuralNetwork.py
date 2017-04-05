@@ -101,96 +101,96 @@ else:
 
 
 ###################### 10 FOLD CV #############################
-
-#dict to store CV results
-CV_results_df = pd.DataFrame()
-#create 10-fold CV model
-folds = KFold(n_splits=10, shuffle=True, random_state=1)
-#lists to store metric values at each fold
-rmse_scores = []
-exp_var_scores = []
-mean_abs_error_scores = []
-mean_sq_error_scores = []
-r2_scores = []
-#carry out 10-fold CV on the data
-fold = 1
-print('Starting 10-fold cross validation')
-for train_index, test_index in folds.split(X_train):
-    #retrieve train - test split for current fold
-    x_train = X_train.iloc[train_index,:]
-    x_test = X_train.iloc[test_index,:]
-    y_train = Y_train.iloc[train_index]
-    y_test = Y_train.iloc[test_index]
+if True:
+    #dict to store CV results
+    CV_results_df = pd.DataFrame()
+    #create 10-fold CV model
+    folds = KFold(n_splits=10, shuffle=True, random_state=1)
+    #lists to store metric values at each fold
+    rmse_scores = []
+    exp_var_scores = []
+    mean_abs_error_scores = []
+    mean_sq_error_scores = []
+    r2_scores = []
+    #carry out 10-fold CV on the data
+    fold = 1
+    print('Starting 10-fold cross validation')
+    for train_index, test_index in folds.split(X_train):
+        #retrieve train - test split for current fold
+        x_train = X_train.iloc[train_index,:]
+        x_test = X_train.iloc[test_index,:]
+        y_train = Y_train.iloc[train_index]
+        y_test = Y_train.iloc[test_index]
+        
+        #Train model for 18 epochs
+        print('Training Neural Network for 18 epochs...')
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            #find number of stories
+            n = x_train.shape[0]
     
-    #Train model for 18 epochs
-    print('Training Neural Network for 18 epochs...')
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-        #find number of stories
-        n = x_train.shape[0]
-
-        for epoch in range(18):
-            print('----- Epoch', epoch, '-----')
-            total_loss = 0
-            #sample batches randomly
-            for i in range(n // BATCH_SIZE):
-                indices = np.random.choice(n,BATCH_SIZE)
-                feed_dict = {x: x_train.iloc[indices], 
-                             y: y_train.iloc[indices]}
-                #compute loss at current batch
-                _, current_loss = sess.run([opt_op, loss], feed_dict=feed_dict)
-                #update total loss
-                total_loss += current_loss
-            print(' Train loss:', total_loss / n)
-            
-            #define feed_dict for training data            
-            train_feed_dict = {x: x_train,
-                               y: y_train}
-            #predict on training data
-            Y_train_pred = sess.run(y_pred, feed_dict = train_feed_dict)
-            #postprocess predictions
-            Y_train_pred_pp = post_process_preds(Y_train_pred)
-            #compute training rmse score
-            train_exp_var,train_mean_abs_err,train_mean_sq_err,train_rmse,train_r2_sc = m.metrics_regress(Y_train_pred_pp, y_train)
-            print(' Train rmse:', round(train_rmse,5))
-            
-            #define feed_dict for test data            
-            test_feed_dict = {x: x_test,
-                              y: y_test}
-            #predict on training data
-            Y_test_pred = sess.run(y_pred, feed_dict = test_feed_dict)
-            #postprocess predictions
-            Y_test_pred_pp = post_process_preds(Y_test_pred)
-            #evaluate predictions
-            exp_var,mean_abs_err,mean_sq_err,rmse,r2_sc = m.metrics_regress(Y_test_pred_pp, y_test)
-            print(' Test rmse:', round(rmse,5))
+            for epoch in range(18):
+                print('----- Epoch', epoch, '-----')
+                total_loss = 0
+                #sample batches randomly
+                for i in range(n // BATCH_SIZE):
+                    indices = np.random.choice(n,BATCH_SIZE)
+                    feed_dict = {x: x_train.iloc[indices], 
+                                 y: y_train.iloc[indices]}
+                    #compute loss at current batch
+                    _, current_loss = sess.run([opt_op, loss], feed_dict=feed_dict)
+                    #update total loss
+                    total_loss += current_loss
+                print(' Train loss:', total_loss / n)
+                
+                #define feed_dict for training data            
+                train_feed_dict = {x: x_train,
+                                   y: y_train}
+                #predict on training data
+                Y_train_pred = sess.run(y_pred, feed_dict = train_feed_dict)
+                #postprocess predictions
+                Y_train_pred_pp = post_process_preds(Y_train_pred)
+                #compute training rmse score
+                train_exp_var,train_mean_abs_err,train_mean_sq_err,train_rmse,train_r2_sc = m.metrics_regress(Y_train_pred_pp, y_train)
+                print(' Train rmse:', round(train_rmse,5))
+                
+                #define feed_dict for test data            
+                test_feed_dict = {x: x_test,
+                                  y: y_test}
+                #predict on training data
+                Y_test_pred = sess.run(y_pred, feed_dict = test_feed_dict)
+                #postprocess predictions
+                Y_test_pred_pp = post_process_preds(Y_test_pred)
+                #evaluate predictions
+                exp_var,mean_abs_err,mean_sq_err,rmse,r2_sc = m.metrics_regress(Y_test_pred_pp, y_test)
+                print(' Test rmse:', round(rmse,5))
+        
+        #append scores from 18th epoch to lists
+        rmse_scores.append(rmse)
+        exp_var_scores.append(exp_var)
+        mean_abs_error_scores.append(mean_abs_err)
+        mean_sq_error_scores.append(mean_sq_err)
+        r2_scores.append(r2_sc)
+        print('Fold: {}, \t RMSE: {:4f}'.format(fold, rmse_scores[-1]))
+        #append score for current fold to results df
+        for tup in [(rmse_scores,'rmse'),(exp_var_scores,'expl_var'),(mean_abs_error_scores,'mae'),(mean_sq_error_scores,'mse'),(r2_scores,'R2')]:
+            scores, metric = tup   
+            CV_results_df.loc[metric,'Fold '+str(fold)] = scores[-1]
+        fold += 1
     
-    #append scores from 18th epoch to lists
-    rmse_scores.append(rmse)
-    exp_var_scores.append(exp_var)
-    mean_abs_error_scores.append(mean_abs_err)
-    mean_sq_error_scores.append(mean_sq_err)
-    r2_scores.append(r2_sc)
-    print('Fold: {}, \t RMSE: {:4f}'.format(fold, rmse_scores[-1]))
-    #append score for current fold to results df
+    #compute mean and standard deviation of each metric, and append these to the results df
     for tup in [(rmse_scores,'rmse'),(exp_var_scores,'expl_var'),(mean_abs_error_scores,'mae'),(mean_sq_error_scores,'mse'),(r2_scores,'R2')]:
-        scores, metric = tup   
-        CV_results_df.loc[metric,'Fold '+str(fold)] = scores[-1]
-    fold += 1
-
-#compute mean and standard deviation of each metric, and append these to the results df
-for tup in [(rmse_scores,'rmse'),(exp_var_scores,'expl_var'),(mean_abs_error_scores,'mae'),(mean_sq_error_scores,'mse'),(r2_scores,'R2')]:
-    scores, metric = tup        
-    #compute mean and std deviation of the scores
-    mean = np.mean(scores)
-    std = np.std(scores)
-    print('10 fold CV '+metric+' mean: {:4f}'.format(mean))
-    print('10 fold CV '+metric+' standard deviation: {:4f}'.format(std))
-    #append mean and std to results df
-    CV_results_df.loc[metric,'mean'] = mean
-    CV_results_df.loc[metric,'std'] = std
-#save results to csv
-CV_results_df.to_csv('output/NeuralNetworkCVResults.csv')
+        scores, metric = tup        
+        #compute mean and std deviation of the scores
+        mean = np.mean(scores)
+        std = np.std(scores)
+        print('10 fold CV '+metric+' mean: {:4f}'.format(mean))
+        print('10 fold CV '+metric+' standard deviation: {:4f}'.format(std))
+        #append mean and std to results df
+        CV_results_df.loc[metric,'mean'] = mean
+        CV_results_df.loc[metric,'std'] = std
+    #save results to csv
+    CV_results_df.to_csv('output/NeuralNetworkCVResults.csv')
 
 #%%
 ###################### PREDICTING ON TEST SET #############################
@@ -232,13 +232,13 @@ with tf.Session() as sess:
     #define feed_dict for test data            
     test_feed_dict = {x: X_test}
     #predict on training data
-    predictions = sess.run(y_pred, feed_dict = test_feed_dict)
+    predictions_test = sess.run(y_pred, feed_dict = test_feed_dict)
 #rescale predictions to a 1-3 scale
-predictions = pd.DataFrame(post_process_preds(predictions))
+predictions = pd.DataFrame(post_process_preds(predictions_test))
 predictions = predictions.apply(lambda x: x[0],axis = 1)
 #add index to predictions
-predictions = pd.DataFrame(predictions, index = X_test.index)
-predictions.columns = ['relevance']
+predictions_df = pd.DataFrame(X_test.index)
+predictions_df['relevance'] = predictions
 print('Saving predictions to output folder...')
 #save predictions
-predictions.to_csv('output/NeuralNetworkPredictions.csv')
+predictions_df.to_csv('output/NeuralNetworkPredictions.csv',index=False)
