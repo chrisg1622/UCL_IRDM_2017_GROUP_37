@@ -22,6 +22,7 @@ models=['LinearRegression',
           'Ridge',
           'ElasticNet',
           'KNN',
+          'SVM',
           'XGBoost',
           'RandomForest',
           'NeuralNetwork']
@@ -46,7 +47,7 @@ min_rmse = min(CV_results.values())
 for model in models:
     weights.loc[model,'Weight'] = CV_results[model]
     
-weights.Weight = weights.Weight.apply(lambda x: 1.0 - 15*(x - min_rmse))
+weights.Weight = weights.Weight.apply(lambda x: 1.0 - 10*(x - min_rmse))
 norm = sum(weights.Weight)
 weights.Weight = weights.Weight.apply(lambda x: x/norm)
 
